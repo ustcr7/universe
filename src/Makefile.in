@@ -1,0 +1,11 @@
+#you must define PROJ_ROOT FIRST
+
+PROJ_SRC_ROOT=$(PROJ_ROOT)/src
+PROJ_BIN_ROOT=$(PROJ_ROOT)/bin
+PROJ_LIB_ROOT=$(PROJ_ROOT)/lib
+PROJ_DEP_ROOT=$(PROJ_ROOT)/dep
+
+GCC=gcc
+CPP=g++
+
+CFLAGS= -g -Werror -Wall 
