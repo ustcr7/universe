@@ -21,7 +21,7 @@
 bool workOn = true;
 u64 idleCnt = 0;      //服务器空转次数,超过一定值会让服务器sleep一会
 
-void * NetIoThreadfunc(void *arg)
+void* NetIoThreadfunc(void *arg)
 {
     while(workOn)
     {
@@ -30,6 +30,26 @@ void * NetIoThreadfunc(void *arg)
 
 		sleep(1);
     }
+	return NULL;
+}
+
+int ProcessTcpServerMsg(ConnMsg *connMsg)
+{
+    UniverseLoginMsg *msg = &connMsg->msg;
+    u64 connId = connMsg->connId;
+	
+    int ret = 0;
+	printf("recv msg from %llu, actorid :%llu, msgid:%d, passwd:%s, now echo back\n"
+				   , connId, msg->getActorId(), msg->getMsgId(), msg->getPasswd());
+	
+	 //原样发回去
+	 TcpServer *tcpServer = TcpServer::GetInstance();
+	 massert_retval(tcpServer != NULL, -1);
+	 ret = tcpServer->PushClientMsg(connMsg);	  
+	 printf("eoch msg back result:%d\n", ret);
+
+	 return 0;
+
 }
 
 static pthread_mutex_t lockMutex;
@@ -56,48 +76,30 @@ int main()
     }
 	printf("create thread finish\n");
 
-    static char buff[1024*1024];
-	size_t buff_len;
-	std::vector<MsgBuffer> msgs;
+
+    static ConnMsg msgs[16];
+	int msgCount = 0;
 	while(workOn)
 	{
-	   if(!tcpServer->HasClientMsg())
-	   	{
-    	   	idleCnt++;
-			if(idleCnt > 100)
-			{
-			    //printf("idle too long sleep\n");
-			    usleep(100000);
-				//printf("awake, begin work\n");
-				idleCnt = 0;
-			}
-	   	    continue;
-	   	}
+   	  msgCount = (int)sizeof(msgs)/sizeof(msgs[0]);
+      ret = tcpServer->PopClientMsg(msgs, msgCount); //一次最多处理20个消息
+	  if(ret < 0 ) //没读到数据
+      {
+	    idleCnt++;
+		if(idleCnt > 100)
+		{
+		    usleep(10000);
+			idleCnt = 0;
+		}
+		continue;
+      }
 
-	   printf("gamesvr tcp server curent msg size :%d\n", tcpServer->ClientMsgCount());
-	   
-	   int ret = 0;
-       //GetMsgFrom TcpServer 注意需要保证和写线程的互斥
-	   ret = tcpServer->PopClientMsg(msgs);
-	   for(int i=0; i<msgs.size(); ++i)
-	   {
-	       printf("gamesvr recv client msg:[%s]\n", msgs.at(i).data); //潜规则:client发来的buff中是带'\0'的
+	  for(int i=0; i<msgCount; ++i)
+	  {
+	      ProcessTcpServerMsg(&msgs[i]);
+	  }
 
-		   MsgBuffer sendBuffer;
-		   sendBuffer.fd = msgs.at(i).fd;
-  		   strcpy(sendBuffer.data, "hello client");
-		   sendBuffer.dataLen = 13;
-		   tcpServer->PushClientMsg(&sendBuffer);
-
-	       //WCC_TODO send msg
-	   }
-	   massert_continue(ret == 0);
-	   //pop msgs and process it
-	   msgs.clear();  
-	
 	}
-
-	//WCC_TODO 需要pthread_join 子线程??
 
 	return 0;
 }

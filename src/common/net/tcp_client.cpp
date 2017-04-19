@@ -76,23 +76,31 @@ int TcpClient::close(){
 	return 0;
 }
 
-int TcpClient::sendMsg(const char *buff, size_t len){
-	int write_len = write(clientFd, buff, len);
-	if(write_len != (int)len)
+int TcpClient::sendMsg(UniverseLoginMsg *msg){
+	static char data[100*1024];
+	size_t data_len = sizeof(data)/sizeof(data[0]);
+	msg->serialize(data, data_len);
+	
+	int write_len = write(clientFd, data, data_len);
+	if(write_len != (int)data_len)
 	{
-		printf("write failed %zu, %d\n", len, write_len);
+		printf("write failed %d, %d\n", (int)write_len, write_len);
 	    return -1;
 	}
 	printf("write success len %d\n", write_len);
 	return 0;
 }
 
-int TcpClient::recvMsg(char *buff, size_t &len){
-	int read_len = read(clientFd, buff, len);
-	printf("read_len %d", read_len);
+int TcpClient::recvMsg(UniverseLoginMsg *msg){
+	static char data[100*1024];
+	size_t data_len = sizeof(data)/sizeof(data[0]);
+	
+	int read_len = read(clientFd, data, data_len);
+	
+	printf("read_len %d\n", read_len);
 	if(read_len < 0)
 	{
-		printf("recv msg failed \n");
+		printf("recv msg failed ,err:%s\n", strerror(errno));
 		return ERR_NO_DATA;
 	}
 	if(0 == read_len)
@@ -102,7 +110,8 @@ int TcpClient::recvMsg(char *buff, size_t &len){
 		return 0;
 	}
 
-	len = read_len;
+	msg->deserialize(data, read_len);
+	
 	return 0;
 }
 

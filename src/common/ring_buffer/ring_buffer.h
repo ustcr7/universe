@@ -3,13 +3,16 @@
 
 #include <stddef.h>
 
-namespace universe{
-
-const static int DEFAULT_RING_BUFF_SIZE = 1<<17;
+const static int DEFAULT_RING_BUFF_SIZE = 1024*1024; // WCC_TODO机器内存足够时改成:100M
 
 //TODO: implement with list  ref:http://blog.codingnow.com/2012/02/ring_buffer.html
 
-struct RingBuffer{
+//ring buffer返回的buff需要回绕时,进行一次内存拷贝,否则上层拿到的不是完整的buff数组
+//更好的解决方案时,当压入数据时,如果尾部空间不足以放下整个消息时,则尾部的空间做个标记,然后从头开始
+
+
+
+class RingBuffer{
 public:
 	RingBuffer(size_t len = DEFAULT_RING_BUFF_SIZE);
 	~RingBuffer();
@@ -18,8 +21,9 @@ public:
 	
 	int read(char *buff, size_t &len);
 
-	int peek_int(int &value);
-	int pop_int(int &valud);
+	int getBufferLen();
+
+	int peekInt(int &value);
 
 	int size();
 private:
@@ -32,7 +36,5 @@ private:
 	int _tail_idx;
 };
 
-
-}
 
 #endif

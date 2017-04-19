@@ -2,6 +2,9 @@
 #define _UNIVERSE_NET_TCP_CLIENT_H_
 
 #include <stddef.h>
+#include "../../proto/universe_cs_proto.h"
+#include "../ring_buffer/ring_buffer.h"
+
 
 class TcpClient{
 public:
@@ -9,8 +12,8 @@ public:
 	int connect(const char *svr_ip, int port);
 	int close();
 
-	int sendMsg(const char *buff, size_t len);	
-	int recvMsg(char *buff, size_t &len);  //non block
+	int sendMsg(UniverseLoginMsg *msg);	
+	int recvMsg(UniverseLoginMsg *msg);  //non block
 private:
 	int clientFd;
 };

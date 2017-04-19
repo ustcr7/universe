@@ -30,8 +30,8 @@ int main()
 	ret = tcpClient->connect("127.0.0.1", 6789);
 	massert_retval(ret == 0, ret);
 
-    char buff[1024];
-	size_t buff_len = 0;
+    //char buff[1024];
+	//size_t buff_len = 0;
 	
     while(true)
    	{
@@ -44,15 +44,24 @@ int main()
 		
 		if(cmdStr.compare("send_msg") == 0)
 		{
-           strcpy(buff, "hello_server");
-		   tcpClient->sendMsg(buff, strlen(buff)+1);
+		   UniverseLoginMsg msg;
+		   msg.setMsgId(1000);
+		   msg.setActorId(100000001UL);
+		   msg.setPasswd("123456");
+
+		   tcpClient->sendMsg(&msg);
 	    }
 		if(cmdStr.compare("recv_msg") == 0)
 		{
-		    memset(buff, 0, sizeof(buff));
-			buff_len = 1024; //sizeof(buff_len)/sizeof(buff_len[0]);
-		    tcpClient->recvMsg(buff, buff_len);
-			printf("recv msg:[%s]\n", buff);
+		    UniverseLoginMsg msg;
+		    ret = tcpClient->recvMsg(&msg);
+			if(ret != 0)
+			{
+			    //printf("recv failed for %d\n", ret);
+				continue;
+			}
+			printf("recv server msg id:%d, actor id:%llu, passwd :%s\n"
+				, msg.getMsgId(), msg.getActorId(), msg.getPasswd());
 		}
 		if(cmdStr.compare("stop")==0)
 		{

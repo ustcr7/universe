@@ -1,12 +1,25 @@
-.PHONY : clean
+PROJ_ROOT=../../
 
-INC_PATH += -I ..
+include ../Makefile.in
 
-CFLAGS += $(INC_PATH)
+MODULE_NAME=unitest
+MODULE_OBJ=$(MODULE_NAME)d
+COMPILE_CPP = test_ringbuffer.cpp
+#COMPILE_CPP = test_proto.cpp
+#SUB_MODULE += 
 
-massert:test-massert.cpp
-	g++ $^ $(CFLAGS) -g -o $@
+CFLAGS += -I .
+CFLAGS += -I ../common/
+CFLAGS += -L $(PROJ_LIB_ROOT)/
 
+all:$(COMPILE_CPP)
+	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lpthread
+arcv:
 
+	@echo "nothing"
+
+#根据.cpp找到.o然后删除 比find 删除高级点吧
 clean:
-	@rm -rf massert
+	@rm -rf $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ)
+	@find . -name "*.o" | xargs rm -f
+	

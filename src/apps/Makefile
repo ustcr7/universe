@@ -2,8 +2,8 @@ PROJ_ROOT=../../
 
 include ../Makefile.in
 
-MODULE_NAME=tools
-SUB_MODULE += moc_client
+MODULE_NAME=apps
+SUB_MODULE += gamesvr
 
 
 define make_sub
