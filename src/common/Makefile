@@ -11,8 +11,11 @@ LIB_PATH=$(PROJ_LIB_ROOT)
 #ALL_CPP = *.cpp
 ALL_CPP += ring_buffer/*.cpp
 ALL_CPP += net/*.cpp
+ALL_CPP += db/*.cpp
 
 CFLAGS += -I .
+#WCC_TODO 为提高项目独立性,可以把mysql的头文件拷贝到src/deps/mysql目录中
+CFLAGS += -I $(MYSQL_INCLUDE_PATH)
 
 $(MODULE_OBJ):$(ALL_CPP)
 	$(CPP) -c $(CFLAGS) $^  $(LDFLAGS)

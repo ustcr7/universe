@@ -4,8 +4,9 @@ include ../Makefile.in
 
 MODULE_NAME=unitest
 MODULE_OBJ=$(MODULE_NAME)d
-COMPILE_CPP = test_ringbuffer.cpp
+COMPILE_CPP = test_db_util.cpp
 #COMPILE_CPP = test_proto.cpp
+#COMPILE_CPP = test_ringbuffer.cpp
 #SUB_MODULE += 
 
 CFLAGS += -I .

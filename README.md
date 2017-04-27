@@ -11,6 +11,14 @@
 -- tcpsvr接收缓存通过ringbuffer处理
 -- 构建makefile
 
+-- v 0.0.3
+-- 接入存储模块(序列化与反序列化)
+-- 
+
+-- v 0.0.4
+-- tcp client端接收缓存也用ring buffer处理
+-- socket write函数不能保证一次写完
+-- 协议文件优化
 
 ---src
    ---common

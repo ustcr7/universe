@@ -9,3 +9,5 @@ GCC=gcc
 CPP=g++
 
 CFLAGS= -g -Werror -Wall 
+
+MYSQL_INCLUDE_PATH=/usr/include/mysql
