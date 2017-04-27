@@ -6,7 +6,6 @@
 #include <stdio.h>
 using namespace universe;
 
-
 int main()
 {
     UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
