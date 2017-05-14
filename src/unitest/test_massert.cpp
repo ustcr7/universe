@@ -13,7 +13,7 @@ int test(int a){
 
 int main(){
 	test(1);
-	test("");
+	test("aaa");
 	test(0);
 	test("abc");
 }

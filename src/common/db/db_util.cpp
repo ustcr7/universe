@@ -10,7 +10,7 @@ MYSQL gs_mysql;
 UniverseDbUtil::UniverseDbUtil()
 {
     //WCC_TODOÐ´½øÅäÖÃÎÄ¼þ
-    strncpy(dblUser, "root", sizeof(dblUser));
+    strncpy(dblUser, "wcc", sizeof(dblUser));
 	strncpy(dbPasswd, "123456", sizeof(dbPasswd));
 	dbPort = 3306;
 }
@@ -38,17 +38,17 @@ int UniverseDbUtil::Init()
 	mysql = mysql_init(mysql);
 	massert_retval(mysql != NULL, -1);
 
-	mysql = mysql_real_connect(mysql, "127.0.0.1", dblUser, dbPasswd, "actor_db", dbPort, NULL, 0);
+	mysql = mysql_real_connect(mysql, "127.0.0.1", dblUser, dbPasswd, "test_db", dbPort, NULL, 0);
 	massert_retval(mysql != NULL, -1);
 
-	ret = mysql_query(mysql, "select actorid,logintime from tbl_actor");
+	ret = mysql_query(mysql, "select id,name from actor_name");
 	massert_retval(0 == ret ,ret);
 
 	MYSQL_RES *res = mysql_use_result(mysql);
     MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(res)) != NULL) {
-        printf("PassWord:%s \n\n", row[0]);
+        printf("Name:%s \n\n", row[1]);
 	}
 
 	mysql_free_result(res);

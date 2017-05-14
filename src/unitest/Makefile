@@ -12,9 +12,11 @@ COMPILE_CPP = test_db_util.cpp
 CFLAGS += -I .
 CFLAGS += -I ../common/
 CFLAGS += -L $(PROJ_LIB_ROOT)/
+CFLAGS += -I $(MYSQL_INCLUDE_PATH)
+DEP_LIB = $(MYSQL_LIB_PATH)/libmysqlclient.a
 
 all:$(COMPILE_CPP)
-	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lpthread
+	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lpthread $(DEP_LIB)
 arcv:
 
 	@echo "nothing"

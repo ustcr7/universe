@@ -18,3 +18,15 @@ int main()
 
 	return 0;
 }
+
+/*
+create user 'wcc'@'localhost' identified by '123456';
+create database test_db;
+grant all on test_db.* to wcc@'localhost';
+
+create table actor_name(
+id int(4) not null primary key auto_increment,
+name char(20) not null);
+
+insert into actor_name values(1, "wcc");
+*/

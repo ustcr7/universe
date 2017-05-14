@@ -80,7 +80,8 @@ int main()
     static ConnMsg msgs[16];
 	int msgCount = 0;
 	while(workOn)
-	{
+	
+{
    	  msgCount = (int)sizeof(msgs)/sizeof(msgs[0]);
       ret = tcpServer->PopClientMsg(msgs, msgCount); //一次最多处理20个消息
 	  if(ret < 0 ) //没读到数据
