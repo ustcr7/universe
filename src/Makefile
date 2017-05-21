@@ -5,8 +5,8 @@ include Makefile.in
 
 MODULE_NAME=universe
 
-SUB_MODULE += common
 SUB_MODULE += proto
+SUB_MODULE += common
 SUB_MODULE += apps
 SUB_MODULE += tools
 SUB_MODULE += unitest

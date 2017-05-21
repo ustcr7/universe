@@ -19,6 +19,7 @@ CFLAGS += -I $(PROTOBUF_INCLUDE_PATH)
 
 PROTOBUF_PROTO = $(wildcard *.proto)
 PROTOBUF_CPP = $(patsubst %.proto, %.pb.cc, $(PROTOBUF_PROTO))
+PROTOBUF_HEADER_FILE = $(patsubst %.proto, %.pb.h, $(PROTOBUF_PROTO))
 
 $(MODULE_OBJ):$(PROTOBUF_CPP)
 	$(CPP) -c $(CFLAGS) $^  $(LDFLAGS)
@@ -33,3 +34,4 @@ arcv:
 clean:
 	@rm -rf $(LIB_PATH)/$(MODULE_STATIC_LIB)
 	@find . -name "*.o" | xargs rm -f
+	@rm -f $(PROTOBUF_CPP) $(PROTOBUF_HEADER_FILE)
