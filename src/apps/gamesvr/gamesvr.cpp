@@ -35,12 +35,14 @@ void* NetIoThreadfunc(void *arg)
 
 int ProcessTcpServerMsg(ConnMsg *connMsg)
 {
-    UniverseLoginMsg *msg = &connMsg->msg;
+    UniverseMsg *msg = &connMsg->msg;
     u64 connId = connMsg->connId;
 	
     int ret = 0;
-	printf("recv msg from %llu, actorid :%llu, msgid:%d, passwd:%s, now echo back\n"
-				   , connId, msg->getActorId(), msg->getMsgId(), msg->getPasswd());
+	std::string name = msg->name();
+	int msg_id = msg->msgid();
+	printf("recv msg from %llu, msgid :%d, name:%s\n"
+				   , connId, msg_id, name.c_str());
 	
 	 //原样发回去
 	 TcpServer *tcpServer = TcpServer::GetInstance();

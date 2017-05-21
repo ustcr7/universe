@@ -12,7 +12,7 @@ CFLAGS += -I .
 CFLAGS += -L $(PROJ_LIB_ROOT)/
 
 $(MODULE_OBJ):$(ALL_CPP)
-	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(FARTHER_MODULE)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lpthread
+	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(FARTHER_MODULE)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lpthread -lprotobuf
 
 #根据.cpp找到.o然后删除 比find 删除高级点吧
 clean:

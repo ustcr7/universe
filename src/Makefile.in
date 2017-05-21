@@ -12,3 +12,8 @@ CFLAGS= -g -Werror -Wall
 
 MYSQL_INCLUDE_PATH=/usr/local/mysql/include
 MYSQL_LIB_PATH=/usr/local/mysql/lib
+
+PROTOC=protoc
+PROTOBUF_BIN_PATH=/usr/local/bin
+PROTOBUF_INCLUDE_PATH=/usr/local/include
+PROTOBUF_LIB_PATH=/usr/local/lib

@@ -152,7 +152,7 @@ int TcpServer::PopClientMsg(ConnMsg *msgs, int &popCount)
 			    massert_retval(0, -1);
 		    }
 
-			msgs[popCount].msg.deserialize(data, data_len);
+			msgs[popCount].msg.ParseFromArray(data, data_len);
 			msgs[popCount].connId = GetIdByfd(clientFd);
            
 			++popCount;
@@ -178,11 +178,11 @@ int TcpServer::PushClientMsg(ConnMsg *connMsg)
 	u64 connId = connMsg->connId;
 	const UniverseMsg *msg = &connMsg->msg;
 
-    int fd = GetFdById(connId);
-    static char data[100*1024];
-	size_t data_len = sizeof(data)/sizeof(data[0]);
+    int fd = GetFdById(connId);;
 	massert_retval(fd >= 0, -1);
-	msg->serialize(data, data_len);
+	int data_len = msg->ByteSize();
+	char data[1024];
+	msg->SerializeToArray(data, data_len);
 
     //WCC_TODO 先假定一次能写完吧
 	int write_len = write(fd, data, data_len);

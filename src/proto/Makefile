@@ -11,9 +11,20 @@ LIB_PATH=$(PROJ_LIB_ROOT)
 ALL_CPP = *.cpp
 
 CFLAGS += -I .
+CFLAGS += -I $(PROTOBUF_INCLUDE_PATH)
 
-$(MODULE_OBJ):$(ALL_CPP)
+#LDFLAGS += -L$(PROTOBUF_LIB_PATH)/
+
+#DEP_LIB += $(PROTOBUF_LIB_PATH)/libprotobuf.a
+
+PROTOBUF_PROTO = $(wildcard *.proto)
+PROTOBUF_CPP = $(patsubst %.proto, %.pb.cc, $(PROTOBUF_PROTO))
+
+$(MODULE_OBJ):$(PROTOBUF_CPP)
 	$(CPP) -c $(CFLAGS) $^  $(LDFLAGS)
+
+$(PROTOBUF_CPP) : $(PROTOBUF_PROTO)
+	$(PROTOBUF_BIN_PATH)/$(PROTOC)  -I=. --cpp_out=. $(PROTOBUF_PROTO)
 
 arcv:
 	ar -r $(LIB_PATH)/$(MODULE_STATIC_LIB)  *.o

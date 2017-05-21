@@ -3,6 +3,7 @@
 #include<stdlib.h>  
 #include<string.h>  
 #include<errno.h>  
+#include <cstring>
 #include<sys/types.h>  
 #include<sys/socket.h>  
 #include<netinet/in.h>
@@ -76,13 +77,14 @@ int TcpClient::close(){
 	return 0;
 }
 
-int TcpClient::sendMsg(UniverseLoginMsg *msg){
-	static char data[100*1024];
-	size_t data_len = sizeof(data)/sizeof(data[0]);
-	msg->serialize(data, data_len);
+int TcpClient::sendMsg(UniverseMsg *msg){
+
+	int data_len = msg->ByteSize();
+	char data[1024];
+	msg->SerializeToArray(data, data_len);
 	
 	int write_len = write(clientFd, data, data_len);
-	if(write_len != (int)data_len)
+	if(write_len != data_len)
 	{
 		printf("write failed %d, %d\n", (int)write_len, write_len);
 	    return -1;
@@ -91,10 +93,10 @@ int TcpClient::sendMsg(UniverseLoginMsg *msg){
 	return 0;
 }
 
-int TcpClient::recvMsg(UniverseLoginMsg *msg){
+int TcpClient::recvMsg(UniverseMsg *msg){
 	static char data[100*1024];
 	size_t data_len = sizeof(data)/sizeof(data[0]);
-	
+
 	int read_len = read(clientFd, data, data_len);
 	
 	printf("read_len %d\n", read_len);
@@ -110,7 +112,7 @@ int TcpClient::recvMsg(UniverseLoginMsg *msg){
 		return 0;
 	}
 
-	msg->deserialize(data, read_len);
+	msg->ParseFromArray(data, data_len);   //WCC_TODO 直接用二进制数组pare的接口没有嘛？
 	
 	return 0;
 }

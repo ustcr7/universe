@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "massert.h"
+
+
+/*
 #include "universe_cs_proto.h"
 
 int main(){
@@ -29,3 +32,5 @@ int main(){
 
 	return 0;
 }
+
+*/

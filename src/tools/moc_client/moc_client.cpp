@@ -44,24 +44,22 @@ int main()
 		
 		if(cmdStr.compare("send_msg") == 0)
 		{
-		   UniverseLoginMsg msg;
-		   msg.setMsgId(1000);
-		   msg.setActorId(100000001UL);
-		   msg.setPasswd("123456");
+		   UniverseMsg msg;
+		   msg.set_msgid(12345678);
+		   msg.set_name("wcc");
 
 		   tcpClient->sendMsg(&msg);
 	    }
 		if(cmdStr.compare("recv_msg") == 0)
 		{
-		    UniverseLoginMsg msg;
+		    UniverseMsg msg;
 		    ret = tcpClient->recvMsg(&msg);
 			if(ret != 0)
 			{
 			    //printf("recv failed for %d\n", ret);
 				continue;
 			}
-			printf("recv server msg id:%d, actor id:%llu, passwd :%s\n"
-				, msg.getMsgId(), msg.getActorId(), msg.getPasswd());
+			printf("recv server msg id:%d, name:%s\n", msg.msgid(), msg.name().c_str());
 		}
 		if(cmdStr.compare("stop")==0)
 		{

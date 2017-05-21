@@ -6,15 +6,16 @@
 #include <list>
 #include <pthread.h> 
 #include <sys/epoll.h>
-#include "../../proto/universe_cs_proto.h"
+#include "../../proto/universe_cs.pb.h"
 #include "../ring_buffer/ring_buffer.h"
+#include "../base_type.h"
 
 typedef int (*TcpServerMsgHandle)(int fd, const UniverseMsg *msg);
 
 struct ConnMsg
 {
     u64 connId;
-	UniverseLoginMsg msg;
+	UniverseMsg msg;
 };
 
 struct ConnInfo

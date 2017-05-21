@@ -1,0 +1,6 @@
+syntax = "proto2";
+
+message UniverseMsg {
+  required int32  msgId   = 1;
+  optional string name    = 2;
+}
