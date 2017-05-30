@@ -9,6 +9,7 @@ MODULE_OBJ=$(MODULE_NAME)d
 ALL_CPP = *.cpp
 
 CFLAGS += -I .
+CFLAGS += -I ../../proto/
 CFLAGS += -L $(PROJ_LIB_ROOT)/
 
 $(MODULE_OBJ):$(ALL_CPP)

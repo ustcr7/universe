@@ -1,6 +1,100 @@
 syntax = "proto2";
 
-message UniverseMsg {
+enum UniverseMsgId
+{
+    UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ              = 1;
+	UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP              = 2;
+	UNIVERSE_MSG_ID_ACTOR_LOGIN_REQ                = 3;
+	UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP                = 4;
+	UNIVERSE_MSG_ID_ACTOR_LOGOUT_REQ               = 5;
+	UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP               = 6;
+	UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_REQ        = 7;
+	UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP        = 8;
+	UNIVERSE_MSG_ID_ACTOR_SET_POS_REQ              = 9;
+	UNIVERSE_MSG_ID_ACTOR_SET_POS_RSP              = 10;
+}
+
+message UniverseMsgHead
+{
   required int32  msgId   = 1;
-  optional string name    = 2;
+  required int32  msgLen  = 2;
+  required int32  actorId = 3;
+}
+
+message ActorRegisteReq
+{
+    required int32 id    = 1;
+    required string name = 2;
+}
+
+message ActorRegisteRsp
+{
+    required int32 result = 1;
+}
+
+message ActorLoginReq
+{
+    //required string name = 1;
+	required int32 id    = 1;
+}
+
+message ActorLoginRsp
+{
+    required int32 result = 1;
+}
+
+message ActorLogoutReq
+{
+    required int32 id = 1;
+}
+
+message ActorLogoutRsp
+{
+    optional int32 reserve = 1;
+}
+
+message ActorGetFullDataReq
+{
+    optional int32 id = 1;
+}
+message ActorPos
+{
+    required int32 x    = 1;
+	required int32 y    = 2;
+}
+
+message ActorGetFullDataRsp
+{
+    optional int32     id    = 1;
+    optional string    name  = 2;
+	optional ActorPos  pos   = 3;
+}
+
+message ActorSetPosReq
+{
+	optional ActorPos  pos  = 3;
+}
+message ActorSetPosRsp
+{
+    required int32 result = 1;
+}
+
+message UniverseMsgBody
+{
+    optional ActorRegisteReq             registeReq          = 1;
+	optional ActorRegisteRsp             registeRsp          = 2;
+    optional ActorLoginReq               loginReq            = 3;
+	optional ActorLoginRsp               loginRsp            = 4;
+	optional ActorLogoutReq              logoutReq           = 5;
+	optional ActorLogoutRsp              logoutRsp           = 6;
+	optional ActorGetFullDataReq         getFullDataReq      = 7;
+	optional ActorGetFullDataRsp         getFullDataRsp      = 8;
+	optional ActorSetPosReq              setPosReq           = 9;
+	optional ActorSetPosRsp              setPosRsp           = 10;
+}
+
+message UniverseMsg
+{
+  required UniverseMsgHead msgHead = 1;
+  optional UniverseMsgBody msgBody = 2;
 }

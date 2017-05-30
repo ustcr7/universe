@@ -8,8 +8,10 @@ MODULE_OBJ=$(MODULE_NAME)d
 ALL_CPP = *.cpp
 
 CFLAGS += -I .
+CFLAGS += -I ../../proto/
 CFLAGS += -L $(PROJ_LIB_ROOT)/
 CFLAGS += -L $(PROTOBUF_LIB_PATH)
+
 DEP_LIB = $(MYSQL_LIB_PATH)/libmysqlclient.a
 DEP_LIB += $(PROTOBUF_LIB_PATH)/libprotobuf.a 
 

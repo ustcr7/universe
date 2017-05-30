@@ -2,6 +2,7 @@
 #include "../../common/errcode.h"
 #include "../../common/base_type.h"
 #include "../../common/net/tcp_client.h"
+#include "universe_cs.pb.h"
 #include <unistd.h>
 #include <vector>
 #include <vector>
@@ -44,11 +45,10 @@ int main()
 		
 		if(cmdStr.compare("send_msg") == 0)
 		{
-		   UniverseMsg msg;
-		   msg.set_msgid(12345678);
-		   msg.set_name("wcc");
-
-		   tcpClient->sendMsg(&msg);
+			UniverseMsg msg;
+			msg.mutable_msgbody()->mutable_registereq()->set_id(12345678);
+			msg.mutable_msgbody()->mutable_registereq()->set_name("wcc");
+		    tcpClient->sendMsg(&msg);
 	    }
 		if(cmdStr.compare("recv_msg") == 0)
 		{
@@ -59,7 +59,7 @@ int main()
 			    //printf("recv failed for %d\n", ret);
 				continue;
 			}
-			printf("recv server msg id:%d, name:%s\n", msg.msgid(), msg.name().c_str());
+			printf("recv server msg id:%d\n", msg.msghead().msgid());
 		}
 		if(cmdStr.compare("stop")==0)
 		{
