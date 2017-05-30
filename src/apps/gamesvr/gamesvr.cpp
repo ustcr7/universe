@@ -4,6 +4,7 @@
 #include "../../common/net/tcp_server.h"
 #include "../../proto/universe_cs.pb.h"
 #include "gamesvr_msg_processer.h"
+#include "instance_mgr.h"
 #include <unistd.h>
 #include <vector>
 #include <vector>
@@ -62,6 +63,11 @@ int main()
 
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
+
+	//初始化地图信息
+	MapMgr *mapMgr = MapMgr::GetSingleInstance();
+	massert_retval(mapMgr != NULL, ERR_BAD_ALLOC);
+	mapMgr->InitAllMapInfo();
 
 	static ConnMsg msgs[16];
 	int msgCount = 0;

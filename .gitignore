@@ -3,6 +3,5 @@
 ################################################################################
 
 /.vs
-/genfiles
-/genfiles/protobuf
 /linuxgenfiles
+/linuxgenfiles/protobuf

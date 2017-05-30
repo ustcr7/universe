@@ -20,11 +20,11 @@ int Pos::SetY(int y)
 	_y = y;
 	return 0;
 }
-int Pos::GetX()
+int Pos::GetX() const
 {
 	return _x;
 }
-int Pos::GetY()
+int Pos::GetY() const
 {
 	return _y;
 }

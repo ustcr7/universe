@@ -8,8 +8,8 @@ public:
 	Pos(int x, int y);
 	int SetX(int x);
 	int SetY(int y);
-	int GetX();
-	int GetY();
+	int GetX() const;
+	int GetY() const;
 private:
 	int _x;
 	int _y;

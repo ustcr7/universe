@@ -16,10 +16,13 @@ public:
 	u64 GetId() const;
 	const Pos* GetPos() const;
 	int SetPos(Pos *pos);
+	int SetInstanceId(u64 id);
+	u64 GetInstanceId();
 private:
 	u64 _id;
 	char _name[128];
-	Pos cur_pos; //actor current pos;
+	Pos cur_pos;    //actor current pos;
+	u64 instance_id; //玩家当前所在instance
 };
 
 

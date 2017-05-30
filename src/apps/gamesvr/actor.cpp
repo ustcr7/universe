@@ -42,3 +42,14 @@ int Actor::SetPos(Pos *pos)
 	cur_pos = *pos;
 	return 0;
 }
+
+int Actor::SetInstanceId(u64 id)
+{
+	instance_id = id;
+	return 0;
+}
+
+u64 Actor::GetInstanceId()
+{
+	return instance_id;
+}
