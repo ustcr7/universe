@@ -58,7 +58,7 @@ int Around::RemoveActor(Actor *actor)
 int Instance::EnterActor(Actor *actor)
 {
 	int ret = 0;
-	Pos init_pos(100, 100);
+	Pos init_pos(10, 10);
 	ret = actor->SetPos(&init_pos);
 	massert_retval(ret == 0, ret);
 
@@ -69,6 +69,13 @@ int Instance::EnterActor(Actor *actor)
 	actor->SetInstanceId(mid);
 
 	IncActorCount();
+
+	printf("actor:%llu(name:%s) enter instance:%llu(mapid:%d) success, cur actor count:%d\n"
+		, actor->GetId()
+		, actor->GetName()
+		, mid
+		, map_id
+	    , actor_count);
 
 	return 0;
 }
@@ -87,13 +94,20 @@ int Instance::LeaveActor(Actor *actor)
 
 	DecActorCount();
 
+	printf("actor:%llu(name:%s) leave instance:%llu(mapid:%d) success, cur actor count:%d\n"
+		, actor->GetId()
+		, actor->GetName()
+		, mid
+		, map_id
+		, actor_count);
+
 	return 0;
 }
 
 Around* Instance::GetAroundByPos(const Pos *pos)
 {
-	int around_x = pos->GetX() / AROUND_SIDE_LEN;
-	int around_y = pos->GetY() / AROUND_SIDE_LEN;
+	int around_x = pos->GetX() / AROUND_WIDTH;
+	int around_y = pos->GetY() / AROUND_HEIGHT;
 
 	massert_retval(around_x < MAX_AROUND_COUNT && around_y < MAX_AROUND_COUNT, NULL);
 
@@ -121,6 +135,15 @@ int Instance::IncActorCount()
 	return 0;
 }
 
+static InstanceMgr *gs_instance_mgr = NULL;
+InstanceMgr*  InstanceMgr::GetSingleInstance()
+{
+	if (gs_instance_mgr == NULL)
+	{
+		gs_instance_mgr = new InstanceMgr;
+	}
+	return gs_instance_mgr;
+}
 u64 InstanceMgr::AllocInstance(int map_id)
 {
 	static u64 global_instance_id = 0;
@@ -130,6 +153,8 @@ u64 InstanceMgr::AllocInstance(int map_id)
 	massert_retval(inst != NULL, 0);
 	inst->SetMapId(map_id);
 	inst->SetInstanceMid(global_instance_id);
+
+	instances.insert(std::make_pair(global_instance_id, inst));
 
 	return global_instance_id;
 }
@@ -193,6 +218,7 @@ int InstanceMgr::EnterActor(Actor *actor, EnterInstanceParam *enter_param)
 		massert_retval(enter_param->GetMapId() > 0, ERR_INVALID_PARAM);
 		u64 instance_id = AllocInstance(enter_param->GetMapId());
 		massert_retval(instance_id != 0 && instance_id != INVALID64, ERR_BAD_ALLOC);
+		inst = GetInstanceById(instance_id);
 
 	} while (0);
 
@@ -204,6 +230,7 @@ int InstanceMgr::EnterActor(Actor *actor, EnterInstanceParam *enter_param)
 
 int InstanceMgr::LeaveActor(Actor *actor)
 {
+	printf("for debug actor:%llu instance id:%llu\n", actor->GetId(), actor->GetInstanceId());
 	Instance *inst = GetInstanceById(actor->GetInstanceId());
 	massert_retval(inst != NULL, ERR_INVALID_PARAM);
 	inst->LeaveActor(actor);

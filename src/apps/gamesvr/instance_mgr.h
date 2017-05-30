@@ -101,6 +101,7 @@ private:
 class InstanceMgr
 {
 public:
+	static InstanceMgr*  GetSingleInstance();
 	u64           AllocInstance(int map_id);
 	void          FreeInstance(u64 instance_id);
 	Instance*     GetInstanceById(u64 instance_id);

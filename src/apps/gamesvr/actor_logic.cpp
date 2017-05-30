@@ -6,6 +6,7 @@
 #include "actor_mgr.h"
 #include "actor.h"
 #include "gamesvr_msg_processer.h"
+#include "instance_mgr.h"
 
 static ActorReqHandle *gs_actor_req_handle = NULL;
 
@@ -71,6 +72,13 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	//set data
 	actor->SetName(db_actor.GetName());
 
+	//enter instance
+	EnterInstanceParam enter_param;
+	enter_param.SetMapId(10000);
+	InstanceMgr *instanceMgr = InstanceMgr::GetSingleInstance();
+	massert_retval(instanceMgr != NULL, ERR_BAD_ALLOC);
+	instanceMgr->EnterActor(actor, &enter_param);
+
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorLoginRsp(conn_id, id, 0);
@@ -91,12 +99,16 @@ int ActorReqHandle::ActorLogoutReq(u64 conn_id, u64 id)
 	Actor *actor = actor_mgr->GetActorById(id);
 	massert_retval(actor != NULL, ERR_INVALID_PARAM);
 
-	db_mgr->UpdateActorData(actor);
-	actor_mgr->FreeActor(id);
+	InstanceMgr *instanceMgr = InstanceMgr::GetSingleInstance();
+	massert_retval(instanceMgr != NULL, ERR_BAD_ALLOC);
+	instanceMgr->LeaveActor(actor);
 
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorLogoutRsp(conn_id, id, 0);
+
+	db_mgr->UpdateActorData(actor);
+	actor_mgr->FreeActor(id);
 
 	printf("actor %llu logout success\n", id);
 

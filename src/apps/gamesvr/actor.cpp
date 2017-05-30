@@ -46,6 +46,7 @@ int Actor::SetPos(Pos *pos)
 int Actor::SetInstanceId(u64 id)
 {
 	instance_id = id;
+	printf("FOR DEBUG::::::::::::::::;actor send instance id:%llu\n", id);
 	return 0;
 }
 
