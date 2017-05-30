@@ -17,8 +17,8 @@ enum UniverseMsgId
 message UniverseMsgHead
 {
   required int32  msgId   = 1;
-  required int32  msgLen  = 2;
-  required int32  actorId = 3;
+  //required int32  msgLen  = 2;
+  optional int32  actorId = 3;
 }
 
 message ActorRegisteReq

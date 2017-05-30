@@ -22,6 +22,8 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 	ActorReqHandle *req_handle = ActorReqHandle::GetSingleInstance();
 	massert_retval(req_handle != NULL, ERR_INVALID_PARAM);
 
+	printf("[GamesvrMsgProcesser]recv client msg msg id:%d\n", msg->msghead().msgid());
+
 	int ret = 0;
 	switch (msg->msghead().msgid())
 	{
@@ -70,7 +72,10 @@ int GamesvrMsgProcesser::SendActorRegisteRsp(u64 connId, u64 acotrId, int result
 	ConnMsg connMsg;
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP);
 	msgData->mutable_msgbody()->mutable_registersp()->set_result(result);
+
+	printf("send registe rsp actor:%llu result:%d\n", acotrId, result);
 
 	SendMsgByTcpServer(&connMsg);
 
@@ -82,6 +87,7 @@ int GamesvrMsgProcesser::SendActorLoginRsp(u64 connId, u64 id, int result)
 	ConnMsg connMsg;
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP);
 	msgData->mutable_msgbody()->mutable_loginrsp()->set_result(result);
 
 	SendMsgByTcpServer(&connMsg);
@@ -93,6 +99,7 @@ int GamesvrMsgProcesser::SendActorLogoutRsp(u64 connId, u64 id, int result)
 	ConnMsg connMsg;
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP);
 	msgData->mutable_msgbody()->mutable_logoutrsp()->set_reserve(0);
 
 	SendMsgByTcpServer(&connMsg);
@@ -104,6 +111,7 @@ int GamesvrMsgProcesser::SendActorFullDataRsp(u64 connId, Actor *actor)
 	ConnMsg connMsg;
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP);
 	msgData->mutable_msgbody()->mutable_getfulldatarsp()->set_id(actor->GetId());
 	msgData->mutable_msgbody()->mutable_getfulldatarsp()->set_name(actor->GetName());
 
@@ -123,7 +131,7 @@ int GamesvrMsgProcesser::SendMsgByTcpServer(ConnMsg *msg)
 	TcpServer *tcpServer = TcpServer::GetInstance();
 	massert_retval(tcpServer != NULL, -1);
 	int ret = tcpServer->PushClientMsg(msg);
-	printf("eoch msg back result:%d\n", ret);
+	//printf("eoch msg back result:%d\n", ret);
 
 	return ret;
 }

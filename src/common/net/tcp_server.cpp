@@ -137,14 +137,15 @@ int TcpServer::PopClientMsg(ConnMsg *msgs, int &popCount)
         //对单个rb是否也应该要数量限制能,否则有可能导致其他的fd等待时间很长
 		while(popCount < maxPopCount)
 		{
-		    int msgLen = 0;
+		    int msgLen = 0;			
 			int ret = rb->peekInt(msgLen);
 			if(ret != 0 || rb->getBufferLen() < msgLen)
 			{
 			    break;
 			}
+			printf("aaaa\n");
 			static char data[10*1024];
-			size_t data_len = msgLen;
+			size_t data_len = msgLen + sizeof(msgLen); //第一个字节是整个消息体的长度N, 后面N个字节才是pb结构体打包后的字节
 			ret = rb->read(data, data_len);
 			if(ret < 0)
 			{
@@ -152,13 +153,15 @@ int TcpServer::PopClientMsg(ConnMsg *msgs, int &popCount)
 			    massert_retval(0, -1);
 		    }
 
-			msgs[popCount].msg.ParseFromArray(data, data_len);
+			msgs[popCount].msg.ParseFromArray(data+ sizeof(msgLen), msgLen);
 			msgs[popCount].connId = GetIdByfd(clientFd);
            
 			++popCount;
-
+						
 			ret = rb->peekInt(msgLen);
-			if(ret == 0 && rb->getBufferLen() >= msgLen)
+			printf("bbbbb\n");
+			data_len = msgLen + sizeof(msgLen);
+			if(ret == 0 && rb->getBufferLen() >= (int)data_len)
 			{
 			    readFdList.push_back(clientFd);
 			    break;
@@ -180,9 +183,11 @@ int TcpServer::PushClientMsg(ConnMsg *connMsg)
 
     int fd = GetFdById(connId);;
 	massert_retval(fd >= 0, -1);
-	int data_len = msg->ByteSize();
+	int msg_byte_len = msg->ByteSize();
+	int data_len = msg->ByteSize() + msg_byte_len;
 	char data[1024];
-	msg->SerializeToArray(data, data_len);
+	memcpy(data, &msg_byte_len, sizeof(msg_byte_len));
+	msg->SerializeToArray(data+sizeof(msg_byte_len), msg_byte_len);
 
     //WCC_TODO 先假定一次能写完吧
 	int write_len = write(fd, data, data_len);
@@ -305,7 +310,7 @@ int TcpServer::ReadDataFromClient(int clientFd)
 		printf("invalid fd:%d\n", clientFd);
 		return -1;
 	}
-	//WCC_TODO: bug,一个包的数据可能需要经过多个read才能读取完全
+
 	if ( (buffer_len = read(clientFd, buffer, 1024)) < 0) //WCC_TODO需要while true读取
 	{
 		if (errno == ECONNRESET)
@@ -345,8 +350,10 @@ int TcpServer::ReadDataFromClient(int clientFd)
 
 	int msgLen = 0;
 	int ret = ringBuffer->peekInt(msgLen);
+	printf("cccc\n");
+	int total_len = msgLen + sizeof(msgLen);  //int(表示消息体字节数组) + 消息体字节数组
 	massert_retval(ret == 0, -1);
-	if((int)ringBuffer->getBufferLen() >= msgLen)
+	if((int)ringBuffer->getBufferLen() >= total_len)
 	{
 	    readFdList.push_back(clientFd);
 	}

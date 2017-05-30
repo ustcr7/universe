@@ -78,10 +78,14 @@ int TcpClient::close(){
 }
 
 int TcpClient::sendMsg(UniverseMsg *msg){
+	int msg_byte_len = msg->ByteSize();
 
-	int data_len = msg->ByteSize();
-	char data[1024];
-	msg->SerializeToArray(data, data_len);
+	int data_len = msg->ByteSize() + sizeof(msg_byte_len);
+	char data[1024];	
+	
+	memcpy(data, &msg_byte_len, sizeof(msg_byte_len));
+
+	msg->SerializeToArray(data+sizeof(msg_byte_len), msg_byte_len);
 	
 	int write_len = write(clientFd, data, data_len);
 	if(write_len != data_len)
@@ -89,7 +93,7 @@ int TcpClient::sendMsg(UniverseMsg *msg){
 		printf("write failed %d, %d\n", (int)write_len, write_len);
 	    return -1;
 	}
-	printf("write success len %d\n", write_len);
+	printf("write success len %d, msg byte size:%d\n", write_len, msg_byte_len);
 	return 0;
 }
 
@@ -112,7 +116,9 @@ int TcpClient::recvMsg(UniverseMsg *msg){
 		return 0;
 	}
 
-	msg->ParseFromArray(data, data_len);   //WCC_TODO 直接用二进制数组pare的接口没有嘛？
+	int msg_byte_len = *(int*)data;
+
+	msg->ParseFromArray(data+sizeof(msg_byte_len), data_len - sizeof(msg_byte_len));   //WCC_TODO 也应该用一个ringbuffer否则可能出现一个包在多次read结果里
 	
 	return 0;
 }

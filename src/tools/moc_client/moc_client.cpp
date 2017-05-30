@@ -42,14 +42,38 @@ int main()
 
 		std::string cmdStr(cmd);
 
+		int my_actor_rid = 12345678;
+		char my_name[100] = "wcc";
 		
-		if(cmdStr.compare("send_msg") == 0)
+		if(cmdStr.compare("send_reg_msg") == 0)
 		{
 			UniverseMsg msg;
-			msg.mutable_msgbody()->mutable_registereq()->set_id(12345678);
-			msg.mutable_msgbody()->mutable_registereq()->set_name("wcc");
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ);
+			msg.mutable_msgbody()->mutable_registereq()->set_id(my_actor_rid);
+			msg.mutable_msgbody()->mutable_registereq()->set_name(my_name);
 		    tcpClient->sendMsg(&msg);
 	    }
+		if (cmdStr.compare("send_login_msg") == 0)
+		{
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGIN_REQ);
+			msg.mutable_msgbody()->mutable_loginreq()->set_id(my_actor_rid);
+			tcpClient->sendMsg(&msg);
+		}
+		if (cmdStr.compare("send_logout_msg") == 0)
+		{
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGOUT_REQ);
+			msg.mutable_msgbody()->mutable_logoutreq()->set_id(my_actor_rid);
+			tcpClient->sendMsg(&msg);
+		}
+		if (cmdStr.compare("send_getdata_msg") == 0)
+		{
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_REQ);
+			msg.mutable_msgbody()->mutable_getfulldatareq()->set_id(my_actor_rid);
+			tcpClient->sendMsg(&msg);
+		}
 		if(cmdStr.compare("recv_msg") == 0)
 		{
 		    UniverseMsg msg;
@@ -58,6 +82,37 @@ int main()
 			{
 			    //printf("recv failed for %d\n", ret);
 				continue;
+			}
+			switch (msg.msghead().msgid())
+			{
+			case UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
+			{
+				printf("recv registe rsp ret:%d\n", msg.msgbody().registersp().result());
+				break;
+			}
+			case UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:
+			{
+				printf("recv login rsp ret:%d\n", msg.msgbody().loginrsp().result());
+				break;
+			}
+			case UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP:
+			{
+				printf("recv log out rsp\n");
+				break;
+			}
+			case UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP:
+			{
+				printf("recv get full data rsp, id:%llu, pos_x:%d, pos_y:%d\n"
+					, (u64)msg.msgbody().getfulldatarsp().id()
+					, msg.msgbody().getfulldatarsp().pos().x()
+					, msg.msgbody().getfulldatarsp().pos().y());
+				break;
+			}
+			default :
+			{
+				printf("invalid recv msgid:%d\n", msg.msghead().msgid());
+				break;
+			}
 			}
 			printf("recv server msg id:%d\n", msg.msghead().msgid());
 		}

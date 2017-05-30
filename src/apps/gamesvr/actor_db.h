@@ -11,7 +11,7 @@ public:
 	ActorDbMgr();
 	static ActorDbMgr* GetSingleInstance();
 	int InsertActorData(const Actor *actor);
-	int LoadActorData(Actor *actor);
+	int LoadActorData(u64 id, Actor *actor);
 	int UpdateActorData(const Actor *actor);
 };
 

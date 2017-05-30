@@ -35,15 +35,18 @@ int ActorDbMgr::InsertActorData(const Actor *actor)
 	Actor copy_actor = *actor;
 	memory_db.insert(std::make_pair(copy_actor.GetId(), copy_actor));
 
+	printf("ActorDbMgr:: actor db mgr insert actor:%llu success\n", copy_actor.GetId());
+
 	return 0;
 }
-int ActorDbMgr::LoadActorData(Actor *actor)
+int ActorDbMgr::LoadActorData(u64 id, Actor *actor)
 {
 	massert_retval(actor != NULL, ERR_INVALID_PARAM);
 
-	std::map<u64, Actor>::iterator iter = memory_db.find(actor->GetId());
+	std::map<u64, Actor>::iterator iter = memory_db.find(id);
 	if (iter == memory_db.end())
 	{
+		actor = NULL;
 		return ERR_NOT_FOUND;
 	}
 

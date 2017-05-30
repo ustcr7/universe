@@ -29,6 +29,8 @@ int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 	ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
 	massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
 
+	printf("actor %llu registe name:%s\n", id, name);
+
 	Actor actor;
 	actor.SetId(id);
 	actor.SetName(name);
@@ -56,7 +58,7 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
 	massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
 	Actor db_actor;
-	int ret = db_mgr->LoadActorData(&db_actor);
+	int ret = db_mgr->LoadActorData(id, &db_actor);
 	if (ret != 0)
 	{
 		printf("load actor:%llu data failed;%d\n", id, ret);
@@ -72,6 +74,8 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorLoginRsp(conn_id, id, 0);
+
+	printf("actor %llu login success\n", id);
 
 	return 0;
 }
@@ -94,6 +98,8 @@ int ActorReqHandle::ActorLogoutReq(u64 conn_id, u64 id)
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorLogoutRsp(conn_id, id, 0);
 
+	printf("actor %llu logout success\n", id);
+
 	return 0;
 }
 
@@ -108,6 +114,8 @@ int ActorReqHandle::ActorGetFullData(u64 conn_id, u64 id)
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorFullDataRsp(conn_id, actor);
+
+	printf("actor %llu get full data success\n", id);
 
 	return 0;
 }
@@ -125,6 +133,8 @@ int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos)
 	//GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	//massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	//msgProcesser->SendActorMoveRsp();
+
+	printf("actor %llu move to pos x:%d, y:%d success\n", id, pos->GetX(), pos->GetY());
 
 	return 0;
 }
