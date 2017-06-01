@@ -24,6 +24,9 @@ static const int TV3_SLOT_NUM = 64;
 static const int TV4_SLOT_NUM = 64;
 static const int TV5_SLOT_NUM = 64;
 
+//这种timer算侵入式的,程序本身需要驱动时间流逝
+//还有一类用类似sleep poll select  boost:asio来实现的则不需要自身管理时间流逝
+
 class UvTimer
 {
 public:
