@@ -53,7 +53,28 @@ int UvTimer::UpdateTimer(u32 cur_ms_sec)
 
 int UvTimer::RunTimer()
 {
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	int tm_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
+	if (tm_ms % (1 << 26) == 0)
+	{
+		//调整第5级时间轮
+	}
+	else if (tm_ms % (1 << 20) == 0)
+	{
+		//调整第4级时间轮
+	}
+	else if (tm_ms % (1 << 14) == 0)
+	{
+		//调整第3级时间轮
+	}
+	else if (tm_ms%(1<<8) == 0)
+	{
+		//调整第2级时间轮
+	}
+
+	//执行第1级时间轮对应槽位上的回调事件
 }
 
 //----------------第一级时间轮----------------
@@ -91,16 +112,42 @@ int UvTimer::ModifyTimerDataSlot(TimerData *timer_data)
 {
 	int left_time = timer_data->GetTimeoutTime();
 
-	//根据tv区间,计算left_time对应的tv
+	std::list<u64> *tv_timer_lists = NULL;
+	int slot_idx = -1;
+	if (left_time >= 0 && left_time < (1<<8))
+	{
+		tv_timer_lists = tv1_timer_lists;
+		slot_idx = slot_idx % 256;
+	}
+	else if (left_time >= 8 && left_time < (1 << 14))
+	{
+		tv_timer_lists = tv2_timer_lists;
+		slot_idx = (left_time) / (1 << 8) - 1;
+	}
+	else if (left_time >= 14 && left_time < (1 << 20))
+	{
+		tv_timer_lists = tv3_timer_lists;
+		slot_idx = (left_time) / (1 << 14) - 1;
+	}
+	else if (left_time >= 20 && left_time < (1 << 26))
+	{
+		tv_timer_lists = tv4_timer_lists;
+		slot_idx = (left_time) / (1 << 20) - 1;
 
-	//计算tv中对应的slot
-	//tv1:
-	//slot_idx = left_time%256
-	//tv2:
-	//slot_idx = left_time/256 -1
+	}
+	else if (left_time >= 26 && left_time < (1 << 32))
+	{
+		tv_timer_lists = tv5_timer_lists;
+		slot_idx = (left_time) / (1 << 26) - 1;
+	}
+	else
+	{
+		massert_retval(0, -1); //invali arg
+	}
 
+	massert_retval(tv_timer_lists != NULL && slot_idx != -1, ERR_INVALID_PARAM);
 
-
+	tv_timer_lists[slot_idx]->push_back(timer_data);
 
 	return 0;
 }

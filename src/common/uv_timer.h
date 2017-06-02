@@ -19,10 +19,10 @@ private:
 };
 
 static const int TV1_SLOT_NUM = 255;
-static const int TV2_SLOT_NUM = 64;
-static const int TV3_SLOT_NUM = 64;
-static const int TV4_SLOT_NUM = 64;
-static const int TV5_SLOT_NUM = 64;
+static const int TV2_SLOT_NUM = 63;
+static const int TV3_SLOT_NUM = 63;
+static const int TV4_SLOT_NUM = 63;
+static const int TV5_SLOT_NUM = 63;
 
 //这种timer算侵入式的,程序本身需要驱动时间流逝
 //还有一类用类似sleep poll select  boost:asio来实现的则不需要自身管理时间流逝
