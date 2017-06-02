@@ -21,16 +21,29 @@ UvTimer* UvTimer::GetSingleInstance()
 	return gs_uv_timer;
 }
 
-int UvTimer::AddTimer(int timerout_ms, TimerCallbackFunc *callback_func, const char *callback_data, size_t callback_data_len)
+int UvTimer::AddTimer(int timeout_ms, TimerCallbackFunc *callback_func, const char *callback_data, size_t callback_data_len)
 {
+	u64 mid = AllocTimerData();
 
+	TimerData *timer_data = GetTimerDataByMid(mid);
+	timer_data->timeout_ms = timeout_ms;
+	timer_data->callback_func = callback_func;
+	memcpy(timer_data->callback_data, callback_data, callback_data_len);
+	timer_data->callback_data_len = callback_data_len;
+
+	ModifyTimerDataSlot(timer_data);
+
+	return 0;
 }
 
 int UvTimer::DelTimer(u64 mid)
 {
-
+	//WCC_TODO:找到对应的list,遍历后删除之
+	return 0;
 }
 
+
+//必须记住上一次runtimer和时间, 从改时间到当前时刻间的所有时间点对应的timerdata都应该补跑一下
 int UvTimer::UpdateTimer(u32 cur_ms_sec)
 {
 	//tv1转了1圈,对tv2进行处理
@@ -43,12 +56,30 @@ int UvTimer::UpdateTimer(u32 cur_ms_sec)
 		u64 mid = *iter;
 		TimerData *timer_data = GetTimerDataByMid(mid);
 		massert_continue(timer_data != NULL);
-
-
 	}
 	
-
 	bool roll_tv3 =  (cur_ms_sec % (1<<14) == 0);
+}
+
+int UvTimer::ModifyTimerList(std::list<u64> *tv_timer_lists, int scale)
+{
+	std::list<u64> *timer_list = &tv_timer_lists[0];
+	for (std::list<u64>::iterator it = timer_list->begin(); it != timer_list->end(); ++it)
+	{
+		u64 mid = *it;
+		TimerData *timer_data = GetTimerDataByMid(mid);
+		massert_continue(timer_data != NULL);
+
+		timer_data->GetTimeoutTime -= scale;
+
+		ModifyTimerDataSlot(timer_data);
+	}
+	timer_list->clear();
+
+	for (int i = 0; i <62; ++i)
+	{
+		tv_timer_lists[i] = tv_timer_lists[i + 1];
+	}
 }
 
 int UvTimer::RunTimer()
@@ -60,21 +91,43 @@ int UvTimer::RunTimer()
 	if (tm_ms % (1 << 26) == 0)
 	{
 		//调整第5级时间轮
+		ModifyTimerList(tv5_timer_lists, 1 << 26);
 	}
 	else if (tm_ms % (1 << 20) == 0)
 	{
 		//调整第4级时间轮
+		ModifyTimerList(tv4_timer_lists, 1 << 20);
 	}
 	else if (tm_ms % (1 << 14) == 0)
 	{
 		//调整第3级时间轮
+		ModifyTimerList(tv3_timer_lists, 1 << 14);
 	}
 	else if (tm_ms%(1<<8) == 0)
 	{
 		//调整第2级时间轮
+		//slot[0] --> 转移到tv1: 256+0, 256+1, ...256+256-1 --> [0] [1] ... [255]
+		//slot[1] = slot[0] ... slot[62] = slot[61]
+		ModifyTimerList(tv2_timer_lists, 1 << 8);
 	}
 
 	//执行第1级时间轮对应槽位上的回调事件
+	int slot_idx = tm_ms % 256;
+	std::list<u64> *timer_list = &tv_timer_lists[slot_idx];
+
+	//遍历list,执行回调函数,然后释放list
+	for (std::list<u64>::iterator it = timer_list->begin(); it != timer_list->end(); ++it)
+	{
+		u64 mid = *it;
+		TimerData *timer_data =  GetTimerDataByMid(mid);
+		massert_continue(timer_data != NULL);
+
+		timer_data->callback_func( timer_data->callback_data, timer_data->callback_data_len);
+	}
+
+	FreeTimerList(timer_list);
+
+	return 0;
 }
 
 //----------------第一级时间轮----------------
@@ -148,6 +201,18 @@ int UvTimer::ModifyTimerDataSlot(TimerData *timer_data)
 	massert_retval(tv_timer_lists != NULL && slot_idx != -1, ERR_INVALID_PARAM);
 
 	tv_timer_lists[slot_idx]->push_back(timer_data);
+
+	return 0;
+}
+
+int UvTimer::FreeTimerList(std::list<u64> *timer_list)
+{
+	massert_retval(timer_list != NULL, ERR_INVALID_PARAM);
+	for (std::list<u64>::iterator it = timer_list->begin(); it != timer_list->end(); ++it)
+	{
+		FreeTimerData(*it);
+	}
+	timer_list->clear();
 
 	return 0;
 }
