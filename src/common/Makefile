@@ -12,6 +12,7 @@ LIB_PATH=$(PROJ_LIB_ROOT)
 ALL_CPP += ring_buffer/*.cpp
 ALL_CPP += net/*.cpp
 ALL_CPP += db/*.cpp
+ALL_CPP += timer/*.cpp
 
 CFLAGS += -I .
 CFLAGS += -I $(MYSQL_INCLUDE_PATH)

@@ -2,10 +2,12 @@
 #include "../../common/errcode.h"
 #include "../../common/base_type.h"
 #include "../../common/net/tcp_server.h"
+#include "../../common/timer/uv_timer.h"
 #include "../../proto/universe_cs.pb.h"
 #include "gamesvr_msg_processer.h"
 #include "instance_mgr.h"
 #include <unistd.h>
+#include <ctime>
 #include <vector>
 #include <vector>
 #include <assert.h>
@@ -39,6 +41,14 @@ void* NetIoThreadfunc(void *arg)
 }
 static pthread_mutex_t lockMutex;
 
+int test_timer_call_back(const char *callback_data, u32 callback_data_len)
+{
+	int add_timer_time = *(int*)callback_data;
+	int cur_time = (int)std::time(0);
+	printf("timer out at:%d, add timer time:%d, interval:%d\n", cur_time, add_timer_time, cur_time-add_timer_time);
+	return 0;
+}
+
 int main()
 {
 	int ret = 0;
@@ -69,6 +79,23 @@ int main()
 	massert_retval(mapMgr != NULL, ERR_BAD_ALLOC);
 	mapMgr->InitAllMapInfo();
 
+	//时间管理器
+	UvTimer *timer = UvTimer::GetSingleInstance();
+	massert_retval(timer != NULL, ERR_BAD_ALLOC);
+	timer->InitTimer();
+
+	if(true)
+	{
+		int cur_time = (int)std::time(0);
+		//test code  //1s  2s  5s 10s 20s 各加一个定时器
+		timer->AddTimer(1*1000,  test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(2 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(5 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(10 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(20 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		printf("add test timer success cur time:%d\n", cur_time);
+	}
+
 	static ConnMsg msgs[16];
 	int msgCount = 0;
 	while (workOn)
@@ -78,15 +105,14 @@ int main()
 		//client logics
 		msgCount = (int)sizeof(msgs) / sizeof(msgs[0]);
 		ret = tcpServer->PopClientMsg(msgs, msgCount); //一次最多处理20个消息
-		if (ret < 0) //没读到数据
+		if (msgCount <= 0) //没读到数据
 		{
 			idleCnt++;
 			if (idleCnt > 100)
 			{
-				usleep(10000);
+				usleep(1000); //睡眠1ms
 				idleCnt = 0;
 			}
-			continue;
 		}
 
 		for (int i = 0; i < msgCount; ++i)
@@ -94,6 +120,7 @@ int main()
 			msgProcesser->RecvActorReq(msgs[i].connId, &msgs[i].msg);
 		}
 
+		timer->RunTimer();
 	}
 
 	return 0;
