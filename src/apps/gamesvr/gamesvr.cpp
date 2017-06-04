@@ -93,6 +93,8 @@ int main()
 		timer->AddTimer(5 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
 		timer->AddTimer(10 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
 		timer->AddTimer(20 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(55 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
+		timer->AddTimer(123 * 1000, test_timer_call_back, (const char*)&cur_time, sizeof(cur_time));
 		printf("add test timer success cur time:%d\n", cur_time);
 	}
 
@@ -110,7 +112,7 @@ int main()
 			idleCnt++;
 			if (idleCnt > 100)
 			{
-				usleep(1000); //Ë¯Ãß1ms
+				usleep(500); //Ë¯Ãß µ¥Î»:Î¢Ãë
 				idleCnt = 0;
 			}
 		}

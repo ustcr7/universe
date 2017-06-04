@@ -18,7 +18,7 @@ public:
 	u32 callback_data_len;
 };
 
-static const int TV1_SLOT_NUM = 255;
+static const int TV1_SLOT_NUM = 256;
 static const int TV2_SLOT_NUM = 63;
 static const int TV3_SLOT_NUM = 63;
 static const int TV4_SLOT_NUM = 63;
