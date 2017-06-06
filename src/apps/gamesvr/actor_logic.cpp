@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
+#include "move/move.h"
 #include "actor_logic.h"
 #include "actor_db.h"
 #include "actor_mgr.h"
@@ -132,7 +133,7 @@ int ActorReqHandle::ActorGetFullData(u64 conn_id, u64 id)
 	return 0;
 }
 
-int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos)
+int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt)
 {
 	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
 	massert_retval(actor_mgr != NULL, ERR_INVALID_PARAM);
@@ -140,13 +141,16 @@ int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos)
 	Actor *actor = actor_mgr->GetActorById(id);
 	massert_retval(actor != NULL, ERR_INVALID_PARAM);
 
-	actor->SetPos(pos);
+	MovePath move_path;
+	move_path.path_count = 0;
+	for (int i = 0; i < pos_cnt; ++i)
+	{
+		move_path.paths[i] = pos[i];
+		++move_path.path_count;
+	}
+	actor->SetMovePath(&move_path);
 
-	//GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
-	//massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
-	//msgProcesser->SendActorMoveRsp();
-
-	printf("actor %llu move to pos x:%d, y:%d success\n", id, pos->GetX(), pos->GetY());
+	AddActorMoveTimer(actor);
 
 	return 0;
 }

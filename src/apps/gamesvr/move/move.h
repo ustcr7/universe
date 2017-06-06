@@ -19,7 +19,7 @@
 
 //当前位置 (cur_x, cur_y)  移动向量(d)
 
-// 1 0.5s 移动不跨段
+// 1. 0.5s 移动不跨段
 //         /|(cur_x + 斜边长*cos(a), cur_y + 斜边长*sia(a))
 //        / |
 //       /  |
@@ -29,10 +29,10 @@
 //  (cur_x, cur_y)
 //   cos(a) = (abs(dst_x - cur_x)/sqrt((dst_x-cur_x)^2+(dst_y-cur_y)^2))
 
-// 2 0.5s 位移跨段了, 把0.5s拆成两段分别计算
+// 2. 0.5s 位移跨段了, 把0.5s拆成两段分别计算
 //
-
-
+struct Actor;
+int AddActorMoveTimer(const Actor *actor);
 
 #endif // !__H_GAMESVR_MOVE_H
 

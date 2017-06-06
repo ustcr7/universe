@@ -36,7 +36,7 @@ const Pos* Actor::GetPos() const
 	return &cur_pos;
 }
 
-int Actor::SetPos(Pos *pos)
+int Actor::SetPos(const Pos *pos)
 {
 	massert_retval(pos != NULL, ERR_INVALID_PARAM);
 	cur_pos = *pos;

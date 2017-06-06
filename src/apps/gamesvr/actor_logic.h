@@ -14,7 +14,7 @@ public:
 	int ActorLoginReq(u64 conn_id, u64 id);
 	int ActorLogoutReq(u64 conn_id, u64 id);
 	int ActorGetFullData(u64 conn_id, u64 id);
-	int ActorMoveReq(u64 conn_id, u64 id, Pos *pos);
+	int ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt);
 private:
 };
 

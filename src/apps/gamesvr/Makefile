@@ -6,6 +6,7 @@ MODULE_NAME=gamesvr
 MODULE_OBJ=$(MODULE_NAME)d
 
 ALL_CPP = *.cpp
+ALL_CPP += move/*.cpp
 
 CFLAGS += -I .
 CFLAGS += -I ../../proto/

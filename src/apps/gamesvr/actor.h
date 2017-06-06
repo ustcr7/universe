@@ -6,7 +6,7 @@
 static const int MAX_MOVE_PATH_COUNT = 30;
 
 struct Pos;
-class MovePath
+struct MovePath
 {
 	int path_count;
 	Pos paths[MAX_MOVE_PATH_COUNT];
@@ -21,19 +21,40 @@ public:
 	int SetId(u64 id);
 	u64 GetId() const;
 	const Pos* GetPos() const;
-	int SetPos(Pos *pos);
+	int SetPos(const Pos *pos);
 	int GetSpeed()const;
 	int SetSpeed(int s);
 	int SetInstanceId(u64 id);
 	u64 GetInstanceId();
+
+	int GetCurPathIndex()
+	{
+		return cur_path_index;
+	}
+	int SetCurPathIndex(int index)
+	{
+		cur_path_index = index;
+		return 0;
+	}
+
+	const MovePath* GetMovePath() const
+	{
+		return &move_path;
+	}
+	int SetMovePath(const MovePath *path)
+	{
+		move_path = *path;
+		return 0;
+	}
 private:
 	u64 _id;
 	char _name[128];
 	Pos cur_pos;    //actor current pos;
 	int speed;      //移动速度
+
 	MovePath move_path;
 	int cur_path_index; //当前移动到哪一段了
-
+	u64 move_timerid;   //移动定时器
 
 	u64 instance_id; //玩家当前所在instance
 };
