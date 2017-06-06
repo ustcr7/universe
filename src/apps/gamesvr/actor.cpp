@@ -43,6 +43,17 @@ int Actor::SetPos(Pos *pos)
 	return 0;
 }
 
+int Actor::GetSpeed()const
+{
+	return speed;
+}
+
+int Actor::SetSpeed(int s)
+{
+	speed = s;
+	return 0;
+}
+
 int Actor::SetInstanceId(u64 id)
 {
 	instance_id = id;
