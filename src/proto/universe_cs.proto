@@ -12,12 +12,13 @@ enum UniverseMsgId
 	UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP        = 8;
 	UNIVERSE_MSG_ID_ACTOR_SET_POS_REQ              = 9;
 	UNIVERSE_MSG_ID_ACTOR_SET_POS_RSP              = 10;
+	UNIVERSE_MSG_ID_ACTOR_MOVE_REQ                 = 11;
+	UNIVERSE_MSG_ID_ACTOR_MOVE_RSP                 = 12;
 }
 
 message UniverseMsgHead
 {
   required int32  msgId   = 1;
-  //required int32  msgLen  = 2;
   optional int32  actorId = 3;
 }
 
@@ -72,11 +73,25 @@ message ActorGetFullDataRsp
 
 message ActorSetPosReq
 {
-	optional ActorPos  pos  = 3;
+	optional ActorPos  pos  = 1;
 }
 message ActorSetPosRsp
 {
     required int32 result = 1;
+}
+
+message PathNode
+{
+    optional int32 pos_x = 1;
+	optional int32 pos_y = 2;
+}
+message ActorMoveReq
+{
+	repeated PathNode paths = 1;
+}
+message ActorMoveRsp
+{
+    optional int32 result = 1;
 }
 
 message UniverseMsgBody
@@ -91,6 +106,8 @@ message UniverseMsgBody
 	optional ActorGetFullDataRsp         getFullDataRsp      = 8;
 	optional ActorSetPosReq              setPosReq           = 9;
 	optional ActorSetPosRsp              setPosRsp           = 10;
+	optional ActorMoveReq                moveReq             = 11;
+	optional ActorMoveRsp                moveRsp             = 12;
 }
 
 message UniverseMsg

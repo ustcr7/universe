@@ -40,6 +40,7 @@ int Actor::SetPos(const Pos *pos)
 {
 	massert_retval(pos != NULL, ERR_INVALID_PARAM);
 	cur_pos = *pos;
+	printf("actor set new pos x:%d y:%d\n", pos->GetX(), pos->GetY());
 	return 0;
 }
 
@@ -64,4 +65,15 @@ int Actor::SetInstanceId(u64 id)
 u64 Actor::GetInstanceId()
 {
 	return instance_id;
+}
+
+int Actor::GetCurPathIndex()
+{
+	return cur_path_index;
+}
+int Actor::SetCurPathIndex(int index)
+{
+	cur_path_index = index;
+	printf("actor set new path index:%d\n", index);
+	return 0;
 }

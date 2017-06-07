@@ -37,7 +37,7 @@ int UvTimer::InitTimer()
 
 	start_ms = cur_tm_ms;
 
-	last_runtime_ms = 0;
+	SetLastRuntimeMs(0);
 
 	printf("uv timer init cur ms:%llu\n", cur_tm_ms);
 
@@ -77,13 +77,14 @@ int UvTimer::RunTimer()
 {
 	u64 cur_runtime_ms = GetCurRuntimeMs();
 
-	massert_retval(cur_runtime_ms >= last_runtime_ms, ERR_INVALID_PARAM);
-	if (cur_runtime_ms == last_runtime_ms) //定时器的最大精度就是毫秒
+	u64 last_ms = GetLastRuntimeMs();
+	massert_retval(cur_runtime_ms >= last_ms, ERR_INVALID_PARAM);
+	if (cur_runtime_ms == last_ms) //定时器的最大精度就是毫秒
 	{
 		return 0;
 	}
 
-	for (u64 i = last_runtime_ms + 1; i <= cur_runtime_ms; ++i)
+	for (u64 i = last_ms + 1; i <= cur_runtime_ms; ++i)
 	{
 		int idx = i%TV_SLOT_NUM;
 		std::list<u64> *timer_list = &tv_timer_lists[idx];
@@ -107,7 +108,7 @@ int UvTimer::RunTimer()
 		}
 	}
 
-	last_runtime_ms = cur_runtime_ms;
+	SetLastRuntimeMs(cur_runtime_ms);
 
 	return 0;
 }
@@ -122,6 +123,17 @@ u64  UvTimer::GetCurRuntimeMs()
 	return cur_tm_ms - start_ms;
 }
 
+int UvTimer::SetLastRuntimeMs(u64 ms)
+{
+	last_runtime_ms = ms;
+	//printf("set new last runtime ms %llu\n", ms);
+	return 0;
+}
+
+u64 UvTimer::GetLastRuntimeMs()
+{
+	return last_runtime_ms;
+}
 
 TimerData* UvTimer::GetTimerDataByMid(u64 mid)
 {

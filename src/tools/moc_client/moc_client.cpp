@@ -74,6 +74,23 @@ int main()
 			msg.mutable_msgbody()->mutable_getfulldatareq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
+		if (cmdStr.compare("send_move_msg") == 0)
+		{
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_actorid(my_actor_rid);
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_MOVE_REQ);
+			ActorMoveReq *move_req = msg.mutable_msgbody()->mutable_movereq();
+			PathNode *node = move_req->add_paths();
+			node->set_pos_x(300);
+			node->set_pos_y(0);
+			node = move_req->add_paths();
+			node->set_pos_x(340);
+			node->set_pos_y(0);
+			node = move_req->add_paths();
+			node->set_pos_x(500);
+			node->set_pos_y(0);
+			tcpClient->sendMsg(&msg);
+		}
 		if(cmdStr.compare("recv_msg") == 0)
 		{
 		    UniverseMsg msg;
@@ -107,6 +124,10 @@ int main()
 					, msg.msgbody().getfulldatarsp().pos().x()
 					, msg.msgbody().getfulldatarsp().pos().y());
 				break;
+			}
+			case UNIVERSE_MSG_ID_ACTOR_MOVE_RSP:
+			{
+				printf("recv move resp\n");
 			}
 			default :
 			{

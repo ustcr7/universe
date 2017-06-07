@@ -84,7 +84,7 @@ int main()
 	massert_retval(timer != NULL, ERR_BAD_ALLOC);
 	timer->InitTimer();
 
-	if(true)
+	if(false)
 	{
 		int cur_time = (int)std::time(0);
 		//test code  //1s  2s  5s 10s 20s 各加一个定时器

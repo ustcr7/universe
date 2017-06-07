@@ -41,14 +41,13 @@ int WalkAlong(const Pos *cur_pos, const Pos *dst_pos, int max_move, MoveResult *
 	return 0;
 }
 
-int AddActorMoveTimer(const Actor *actor)
+int AddActorMoveTimer(const Actor *actor, int delay_interval)
 {
 	//时间管理器
 	UvTimer *timer = UvTimer::GetSingleInstance();
 	massert_retval(timer != NULL, ERR_BAD_ALLOC);
-	timer->InitTimer();
 	u64 mid = actor->GetId();
-	timer->AddTimer(500, ActorMoveTimeout, (const char*)&mid, sizeof(mid));
+	timer->AddTimer(delay_interval, ActorMoveTimeout, (const char*)&mid, sizeof(mid));
 
 	return 0;
 }
@@ -88,7 +87,7 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 		if (result.left_move <= 0)                      //尚未走完整个序列,但是0.5s的位移已经走完
 		{
 			actor->SetPos(&dst_pos);
-			AddActorMoveTimer(actor);
+			AddActorMoveTimer(actor, 500);
 			return 0;
 		}
 

@@ -58,7 +58,7 @@ int Around::RemoveActor(Actor *actor)
 int Instance::EnterActor(Actor *actor)
 {
 	int ret = 0;
-	Pos init_pos(10, 10);
+	Pos init_pos(0, 0);
 	ret = actor->SetPos(&init_pos);
 	massert_retval(ret == 0, ret);
 

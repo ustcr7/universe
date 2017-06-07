@@ -72,6 +72,7 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	
 	//set data
 	actor->SetName(db_actor.GetName());
+	actor->SetSpeed(50);  //0.5m/s
 
 	//enter instance
 	EnterInstanceParam enter_param;
@@ -148,9 +149,16 @@ int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt)
 		move_path.paths[i] = pos[i];
 		++move_path.path_count;
 	}
+	actor->SetCurPathIndex(0);
 	actor->SetMovePath(&move_path);
 
-	AddActorMoveTimer(actor);
+	{
+		//debug code
+		const MovePath *movePath = actor->GetMovePath();
+		printf("move path cnt:%d\n", movePath->path_count);
+	}
+
+	AddActorMoveTimer(actor, 1);
 
 	return 0;
 }

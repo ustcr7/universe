@@ -27,15 +27,8 @@ public:
 	int SetInstanceId(u64 id);
 	u64 GetInstanceId();
 
-	int GetCurPathIndex()
-	{
-		return cur_path_index;
-	}
-	int SetCurPathIndex(int index)
-	{
-		cur_path_index = index;
-		return 0;
-	}
+	int GetCurPathIndex();
+	int SetCurPathIndex(int index);
 
 	const MovePath* GetMovePath() const
 	{

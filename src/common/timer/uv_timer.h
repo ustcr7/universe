@@ -62,6 +62,10 @@ private:
 
 	u64 GetCurRuntimeMs();
 
+
+	int SetLastRuntimeMs(u64 ms);
+	u64 GetLastRuntimeMs();
+
 	//timer dataπ‹¿Ì
 	TimerData* GetTimerDataByMid(u64 mid);
 	u64 AllocTimerData();

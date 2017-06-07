@@ -57,6 +57,22 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 		massert_noeffect(0); //not implement
 		break;
 	}
+	case UNIVERSE_MSG_ID_ACTOR_MOVE_REQ:
+	{
+		u64 actor_rid = msg->msghead().actorid();
+		const ActorMoveReq &move_req = msg->msgbody().movereq();
+		int pos_cnt = move_req.paths_size();
+		Pos pos[128];
+		for (int i = 0; i < pos_cnt; ++i)
+		{
+			pos[i].SetX(move_req.paths(i).pos_x());
+			pos[i].SetY(move_req.paths(i).pos_y());
+			printf(" node %d x:%d, y:%d\n", i, pos[i].GetX(), pos[i].GetY());
+		}
+		printf("actor move req pos cnt:%d\n", pos_cnt);
+		ret = req_handle->ActorMoveReq(connId, actor_rid, pos, pos_cnt);
+		break;
+	}
 	default:
 	{
 		massert_retval(0, ERR_INVALID_PARAM);

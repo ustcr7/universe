@@ -32,7 +32,7 @@
 // 2. 0.5s 位移跨段了, 把0.5s拆成两段分别计算
 //
 struct Actor;
-int AddActorMoveTimer(const Actor *actor);
+int AddActorMoveTimer(const Actor *actor, int delay_interval);
 
 #endif // !__H_GAMESVR_MOVE_H
 
