@@ -72,7 +72,7 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	
 	//set data
 	actor->SetName(db_actor.GetName());
-	actor->SetSpeed(50);  //0.5m/s
+	actor->SetSpeed(100);  //1m/s
 
 	//enter instance
 	EnterInstanceParam enter_param;

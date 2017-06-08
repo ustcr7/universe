@@ -5,6 +5,7 @@
 #include "../actor.h"
 #include "../actor_mgr.h"
 #include <cmath>
+#include <cstdlib>
 struct MoveResult
 {
 	bool reach_end;       //是否到达终点
@@ -16,6 +17,7 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len);
 
 int WalkAlong(const Pos *cur_pos, const Pos *dst_pos, int max_move, MoveResult *result)
 {
+	//printf("walk src<%d-%d> dst<%d-%d>\n"		, cur_pos->GetX(), cur_pos->GetY()		, dst_pos->GetX(), dst_pos->GetY());
 	int diff_x = dst_pos->GetX() - cur_pos->GetX();
 	int diff_y = dst_pos->GetY() - cur_pos->GetY();
 	int dist = sqrt(diff_x*diff_x + diff_y*diff_y);
@@ -31,6 +33,7 @@ int WalkAlong(const Pos *cur_pos, const Pos *dst_pos, int max_move, MoveResult *
 		result->stop_pos.SetX(new_pos_x);
 		result->stop_pos.SetY(new_pos_y);
 		result->left_move = 0;
+		//printf("move %d, dst dist:%d, stop pos<%d-%d>\n", max_move, dist, new_pos_x, new_pos_y);
 		return 0;
 	}
 
@@ -57,7 +60,7 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 	int ret = 0;
 	u64 actor_mid = *(u64*)callback_data;
 
-	printf("actor:%llu move time out\n", actor_mid);
+	//printf("actor:%llu move time out\n", actor_mid);
 
 	ActorMgr *actorMgr = ActorMgr::GetSingleInstance();
 	massert_retval(actorMgr != NULL, ERR_BAD_ALLOC);
@@ -71,6 +74,7 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 	massert_retval(cur_path_index >= 0 && cur_path_index < movePath->path_count, ERR_INVALID_PARAM);
 
 	int max_move = actor->GetSpeed() * 0.5;   //计算玩家0.5秒内最多移动距离
+	//printf("max move len per 0.5s %d\n", max_move);
 
 	while (max_move > 0)
 	{
@@ -79,15 +83,15 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 		ret = WalkAlong(&cur_pos, &dst_pos, max_move, &result);
 		massert_retval(ret == 0, ret);
 
-		if (cur_path_index == movePath->path_count - 1) //表示整个移动序列已经完成
-		{
-			actor->SetPos(&dst_pos);
-			return 0;
-		}
 		if (result.left_move <= 0)                      //尚未走完整个序列,但是0.5s的位移已经走完
 		{
-			actor->SetPos(&dst_pos);
+			actor->SetPos(&result.stop_pos);
+			if(cur_path_index == movePath->path_count - 1 && result.reach_end)
+			{
+				return 0; //整个移动序列都走完了
+			}
 			AddActorMoveTimer(actor, 500);
+			//printf("0.5s move finish\n");
 			return 0;
 		}
 
@@ -96,6 +100,8 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 			cur_path_index++;
 			actor->SetCurPathIndex(cur_path_index);
 			max_move = result.left_move;
+			cur_pos = result.stop_pos;
+			//printf("path %d finish, left move:%d\n", cur_path_index-1, max_move);
 		}
 	}
 

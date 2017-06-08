@@ -10,7 +10,7 @@ static UvTimer *gs_uv_timer = NULL;
 int TimerData::SetTimeoutMs(u64 ms)
 {
 	timeout_ms = ms;
-	printf("timer mid:%llu set new timeout ms:%llu\n", mid, ms);
+	//printf("timer mid:%llu set new timeout ms:%llu\n", mid, ms);
 	return 0;
 }
 u64 TimerData::GetTimeoutMs()
@@ -46,7 +46,7 @@ int UvTimer::InitTimer()
 
 int UvTimer::AddTimer(int ms_interval, TimerCallbackFunc callback_func, const char *callback_data, u32 callback_data_len)
 {
-	printf("add timer timeout at %llu\n", ms_interval + GetCurRuntimeMs());
+	//printf("add timer timeout at %llu\n", ms_interval + GetCurRuntimeMs());
 
 	u64 mid = AllocTimerData();
 

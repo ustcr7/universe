@@ -81,6 +81,17 @@ int main()
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_MOVE_REQ);
 			ActorMoveReq *move_req = msg.mutable_msgbody()->mutable_movereq();
 			PathNode *node = move_req->add_paths();
+
+		    //斜线行走 有问题
+			node->set_pos_x(100);
+			node->set_pos_y(100);
+			node = move_req->add_paths();
+			node->set_pos_x(200);
+			node->set_pos_y(600);
+			node = move_req->add_paths();
+			//直线行走 OK
+			/*
+			PathNode *node = move_req->add_paths();
 			node->set_pos_x(300);
 			node->set_pos_y(0);
 			node = move_req->add_paths();
@@ -89,6 +100,22 @@ int main()
 			node = move_req->add_paths();
 			node->set_pos_x(500);
 			node->set_pos_y(0);
+			node = move_req->add_paths();
+			node->set_pos_x(530);
+			node->set_pos_y(0);
+			node = move_req->add_paths();
+			node->set_pos_x(1000);
+			node->set_pos_y(0);
+			node = move_req->add_paths();
+			node->set_pos_x(1000);
+			node->set_pos_y(30);
+			node = move_req->add_paths();
+			node->set_pos_x(1000);
+			node->set_pos_y(100);
+			node = move_req->add_paths();
+			node->set_pos_x(1000);
+			node->set_pos_y(300);
+			*/
 			tcpClient->sendMsg(&msg);
 		}
 		if(cmdStr.compare("recv_msg") == 0)

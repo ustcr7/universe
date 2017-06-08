@@ -52,6 +52,7 @@ int Actor::GetSpeed()const
 int Actor::SetSpeed(int s)
 {
 	speed = s;
+	printf("actor set speed %d\n", speed);
 	return 0;
 }
 
@@ -74,6 +75,6 @@ int Actor::GetCurPathIndex()
 int Actor::SetCurPathIndex(int index)
 {
 	cur_path_index = index;
-	printf("actor set new path index:%d\n", index);
+	//printf("actor set new path index:%d\n", index);
 	return 0;
 }
