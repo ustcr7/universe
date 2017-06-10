@@ -67,9 +67,9 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 		{
 			pos[i].SetX(move_req.paths(i).pos_x());
 			pos[i].SetY(move_req.paths(i).pos_y());
-			//printf(" node %d x:%d, y:%d\n", i, pos[i].GetX(), pos[i].GetY());
+			printf(" node %d x:%d, y:%d\n", i, pos[i].GetX(), pos[i].GetY());
 		}
-		//printf("actor move req pos cnt:%d\n", pos_cnt);
+		printf("actor move req pos cnt:%d\n", pos_cnt);
 		ret = req_handle->ActorMoveReq(connId, actor_rid, pos, pos_cnt);
 		break;
 	}

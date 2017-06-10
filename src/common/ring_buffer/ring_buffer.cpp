@@ -60,8 +60,7 @@ int RingBuffer::write(const char *data, size_t len){
 		_size += len;
 	}
 
-	printf("wite len:%d, bufer cur size:%d, <head_idx:%d, tail_idx:%d>\n"
-		, (int)len, (int)_size, _head_idx, _tail_idx);
+	//printf("wite len:%d, bufer cur size:%d, <head_idx:%d, tail_idx:%d>\n", (int)len, (int)_size, _head_idx, _tail_idx);
 
 	return 0;
 }
@@ -102,8 +101,7 @@ int RingBuffer::read(char *buff, size_t &len){
 		_size -= len;
 	}
 
-	printf("read len:%d, bufer cur size:%d, <head_idx:%d, tail_idx:%d>\n"
-		, (int)len, (int)_size,  _head_idx, _tail_idx);
+	//printf("read len:%d, bufer cur size:%d, <head_idx:%d, tail_idx:%d>\n", (int)len, (int)_size,  _head_idx, _tail_idx);
 
 	return 0;
 }

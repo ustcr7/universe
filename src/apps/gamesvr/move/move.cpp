@@ -17,15 +17,15 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len);
 
 int WalkAlong(const Pos *cur_pos, const Pos *dst_pos, int max_move, MoveResult *result)
 {
-	//printf("walk src<%d-%d> dst<%d-%d>\n"		, cur_pos->GetX(), cur_pos->GetY()		, dst_pos->GetX(), dst_pos->GetY());
+	//printf("walk src<%d-%d> dst<%d-%d>\n"		, cur_pos->GetX(), cur_pos->GetY(), dst_pos->GetX(), dst_pos->GetY());
 	int diff_x = dst_pos->GetX() - cur_pos->GetX();
 	int diff_y = dst_pos->GetY() - cur_pos->GetY();
 	int dist = sqrt(diff_x*diff_x + diff_y*diff_y);
 
 	if (max_move < dist)  //移动距离内不会到达该段终点
 	{
-		int cos_a = (dst_pos->GetX() - cur_pos->GetX()) / dist;
-		int sin_a = (dst_pos->GetY() - cur_pos->GetY()) / dist;
+		double cos_a = (dst_pos->GetX() - cur_pos->GetX()) / (float)dist; //WCC_TODO不要用浮点数
+		double sin_a = (dst_pos->GetY() - cur_pos->GetY()) / (float)dist; //WCC_TODO不要用浮点数
 		int new_pos_x = cur_pos->GetX() + max_move * cos_a;
 		int new_pos_y = cur_pos->GetY() + max_move * sin_a;
 
@@ -74,7 +74,7 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 	massert_retval(cur_path_index >= 0 && cur_path_index < movePath->path_count, ERR_INVALID_PARAM);
 
 	int max_move = actor->GetSpeed() * 0.5;   //计算玩家0.5秒内最多移动距离
-	//printf("max move len per 0.5s %d\n", max_move);
+	//printf("max move len per 0.5s %d, cur path idex:%d, total path cnt:%d\n", max_move, cur_path_index, movePath->path_count);
 
 	while (max_move > 0)
 	{
@@ -97,11 +97,18 @@ int ActorMoveTimeout(const char *callback_data, u32 callback_data_len)
 
 		if (result.reach_end)                          //序列中当前段已经走完,但还剩余位移,需要继续移动
 		{
+			if (cur_path_index == movePath->path_count - 1) //整个序列都走完了,还剩余移动距离直接抛弃
+			{
+				actor->SetPos(&result.stop_pos);
+				return 0; //整个移动序列都走完了
+			}
+
 			cur_path_index++;
 			actor->SetCurPathIndex(cur_path_index);
 			max_move = result.left_move;
 			cur_pos = result.stop_pos;
-			//printf("path %d finish, left move:%d\n", cur_path_index-1, max_move);
+			//printf("path %d finish, left move:%d, cur path idx;%d,total path count:%d\n"
+			//	, cur_path_index - 1, max_move, cur_path_index, movePath->path_count);
 		}
 	}
 

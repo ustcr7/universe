@@ -80,42 +80,79 @@ int main()
 			msg.mutable_msghead()->set_actorid(my_actor_rid);
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_MOVE_REQ);
 			ActorMoveReq *move_req = msg.mutable_msgbody()->mutable_movereq();
-			PathNode *node = move_req->add_paths();
 
-		    //斜线行走 有问题
-			node->set_pos_x(100);
-			node->set_pos_y(100);
-			node = move_req->add_paths();
-			node->set_pos_x(200);
-			node->set_pos_y(600);
-			node = move_req->add_paths();
+			if (true)   //折线走
+			{
+				//(50,150) --> (200,100) --> (320,160) --> (0,0)
+				PathNode *node = move_req->add_paths();
+				node->set_pos_x(50);
+				node->set_pos_y(150);
+				node = move_req->add_paths();
+				node->set_pos_x(200);
+				node->set_pos_y(100);
+				node = move_req->add_paths();
+				node->set_pos_x(320);
+				node->set_pos_y(160);
+				node = move_req->add_paths();
+				node->set_pos_x(0);
+				node->set_pos_y(0);
+			}
+			if (false)   //往回走
+			{
+				//(300,0) --> (330,0) --> (330,100) --> (150,100)
+				PathNode *node = move_req->add_paths();
+				node->set_pos_x(300);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(330);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(330);
+				node->set_pos_y(100);
+				node = move_req->add_paths();
+				node->set_pos_x(150);
+				node->set_pos_y(100);
+			}
+
+			//斜线行走
+			if(false)
+			{
+				PathNode *node = move_req->add_paths();		    
+				node->set_pos_x(100);
+				node->set_pos_y(100);
+
+				node = move_req->add_paths();
+				node->set_pos_x(200);
+				node->set_pos_y(600);
+			}
 			//直线行走 OK
-			/*
-			PathNode *node = move_req->add_paths();
-			node->set_pos_x(300);
-			node->set_pos_y(0);
-			node = move_req->add_paths();
-			node->set_pos_x(340);
-			node->set_pos_y(0);
-			node = move_req->add_paths();
-			node->set_pos_x(500);
-			node->set_pos_y(0);
-			node = move_req->add_paths();
-			node->set_pos_x(530);
-			node->set_pos_y(0);
-			node = move_req->add_paths();
-			node->set_pos_x(1000);
-			node->set_pos_y(0);
-			node = move_req->add_paths();
-			node->set_pos_x(1000);
-			node->set_pos_y(30);
-			node = move_req->add_paths();
-			node->set_pos_x(1000);
-			node->set_pos_y(100);
-			node = move_req->add_paths();
-			node->set_pos_x(1000);
-			node->set_pos_y(300);
-			*/
+			if(false)
+			{
+				PathNode *node = move_req->add_paths();
+				node->set_pos_x(300);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(340);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(500);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(530);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(1000);
+				node->set_pos_y(0);
+				node = move_req->add_paths();
+				node->set_pos_x(1000);
+				node->set_pos_y(30);
+				node = move_req->add_paths();
+				node->set_pos_x(1000);
+				node->set_pos_y(100);
+				node = move_req->add_paths();
+				node->set_pos_x(1000);
+				node->set_pos_y(300);
+			}
 			tcpClient->sendMsg(&msg);
 		}
 		if(cmdStr.compare("recv_msg") == 0)
