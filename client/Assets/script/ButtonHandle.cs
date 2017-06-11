@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ButtonHandle : MonoBehaviour {
 
@@ -16,5 +17,10 @@ public class ButtonHandle : MonoBehaviour {
     public void Click()
     {
         Debug.Log("登录成功");
+    }
+
+    public void ChangToScene(string sceneToChangeTo)
+    {
+        SceneManager.LoadScene(sceneToChangeTo);
     }
 }
