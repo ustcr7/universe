@@ -57,7 +57,7 @@ int main()
 	pthread_mutex_init(&lockMutex, NULL);
 
 	TcpServer *tcpServer = TcpServer::GetInstance();
-	ret = tcpServer->Init("127.0.0.1", 6789, &lockMutex);
+	ret = tcpServer->Init("10.154.142.48", 6789, &lockMutex);
 	massert_retval(ret == 0, ret);
 	printf("tcp server init success\n");
 
