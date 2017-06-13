@@ -26,6 +26,7 @@ public:
 	Around();
 	int AddActor(Actor *actor);
 	int RemoveActor(Actor *actor);
+	int DumpAllActors(Actor **actorArr, int *actorCnt);
 private:
 	int actor_count;
 	Actor* actor_list[MAX_ACTOR_IN_AROUND];

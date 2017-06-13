@@ -14,6 +14,9 @@ enum UniverseMsgId
 	UNIVERSE_MSG_ID_ACTOR_SET_POS_RSP              = 10;
 	UNIVERSE_MSG_ID_ACTOR_MOVE_REQ                 = 11;
 	UNIVERSE_MSG_ID_ACTOR_MOVE_RSP                 = 12;
+	UNIVERSE_MSG_ID_CHAT_REQ                       = 13;
+	UNIVERSE_MSG_ID_CHAT_RSP                       = 14;
+	UNIVERSE_MSG_ID_FORWRARD_CHAT                  = 15;
 }
 
 message UniverseMsgHead
@@ -87,11 +90,38 @@ message PathNode
 }
 message ActorMoveReq
 {
-	repeated PathNode paths = 1;
+    repeated PathNode paths = 1;
 }
 message ActorMoveRsp
 {
     optional int32 result = 1;
+}
+
+enum ChatType
+{
+    CHAT_TYPE_PRIVATE             = 1;
+	CHAT_TYPE_AROUND              = 2;
+	CHAT_TYPE_BROADCAST           = 3;
+}
+
+message ChatInfo
+{
+    optional ChatType    type     = 1;
+    optional string      content  = 2;
+	optional uint64      dstId    = 3;
+}
+message ChatReq
+{
+    optional ChatInfo chatInfo   = 1;
+}
+message ChatRsp
+{
+    optional int32       result   = 1;
+}
+
+message ForwardChatInfo
+{
+    optional ChatInfo chatInfo   = 1;
 }
 
 message UniverseMsgBody
@@ -108,6 +138,9 @@ message UniverseMsgBody
 	optional ActorSetPosRsp              setPosRsp           = 10;
 	optional ActorMoveReq                moveReq             = 11;
 	optional ActorMoveRsp                moveRsp             = 12;
+	optional ChatReq                     chatReq             = 13;
+	optional ChatRsp                     chatRsp             = 14;
+	optional ForwardChatInfo             forwardChatInfo     = 15;  //server-->client,其他client发来的聊天消息
 }
 
 message UniverseMsg

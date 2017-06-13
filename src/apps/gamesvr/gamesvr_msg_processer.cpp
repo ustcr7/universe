@@ -96,7 +96,7 @@ int GamesvrMsgProcesser::SendActorRegisteRsp(u64 connId, u64 acotrId, int result
 	SendMsgByTcpServer(&connMsg);
 
 	return 0;
-};
+}
 
 int GamesvrMsgProcesser::SendActorLoginRsp(u64 connId, u64 id, int result)
 {
@@ -108,7 +108,7 @@ int GamesvrMsgProcesser::SendActorLoginRsp(u64 connId, u64 id, int result)
 
 	SendMsgByTcpServer(&connMsg);
 	return 0;
-};
+}
 
 int GamesvrMsgProcesser::SendActorLogoutRsp(u64 connId, u64 id, int result)
 {
@@ -120,7 +120,7 @@ int GamesvrMsgProcesser::SendActorLogoutRsp(u64 connId, u64 id, int result)
 
 	SendMsgByTcpServer(&connMsg);
 	return 0;
-};
+}
 
 int GamesvrMsgProcesser::SendActorFullDataRsp(u64 connId, Actor *actor)
 {
@@ -133,13 +133,32 @@ int GamesvrMsgProcesser::SendActorFullDataRsp(u64 connId, Actor *actor)
 
 	SendMsgByTcpServer(&connMsg);
 	return 0;
-};
+}
 
 int GamesvrMsgProcesser::SendActorSetPosRsp(u64 connId, u64 id, Pos *pos)
 {
 	massert_noeffect(0); //not implement
 	return 0;
-};
+}
+
+int GamesvrMsgProcesser::SendForwardChatInfo(u64 connId
+						, ChatType chatType
+						, u64 srcActorid
+						, u64 dstActorId
+						, const char *content
+						, int content_len)
+{
+	ConnMsg connMsg;
+	connMsg.connId = connId;
+	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_FORWRARD_CHAT);
+	ChatInfo* info = msgData->mutable_msgbody()->mutable_forwardchatinfo()->mutable_chatinfo();
+	info->set_content(content);
+	info->set_type(chatType);
+
+	SendMsgByTcpServer(&connMsg);
+	return 0;
+}
 
 int GamesvrMsgProcesser::SendMsgByTcpServer(ConnMsg *msg)
 {

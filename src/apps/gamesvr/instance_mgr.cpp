@@ -55,6 +55,23 @@ int Around::RemoveActor(Actor *actor)
 	return 0;
 }
 
+int Around::DumpAllActors(Actor **actorArr, int *actorCnt)
+{
+	int ret = 0;
+	massert_retval(actorArr != nullptr && actorCnt != nullptr, ERR_INVALID_PARAM);
+
+	int maxCnt = *actorCnt;
+	*actorCnt = 0;
+
+	for (int i = 0; i < actor_count && *actorCnt < maxCnt; ++i)
+	{
+		actorArr[*actorCnt] = actor_list[i];
+		*actorCnt = *actorCnt + 1;
+	}
+
+	return 0;
+}
+
 int Instance::EnterActor(Actor *actor)
 {
 	int ret = 0;

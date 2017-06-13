@@ -35,6 +35,7 @@ int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 
 	Actor actor;
 	actor.SetId(id);
+	actor.SetConnId(conn_id);
 	actor.SetName(name);
 	int ret = 0;
 	ret = db_mgr->InsertActorData(&actor);
@@ -69,7 +70,9 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 
 	Actor *actor = actor_mgr->AllocActor(id);
 	massert_retval(actor != NULL, ERR_BAD_ALLOC);
-	
+
+	actor->SetConnId(conn_id);
+
 	//set data
 	actor->SetName(db_actor.GetName());
 	actor->SetSpeed(100);  //1m/s

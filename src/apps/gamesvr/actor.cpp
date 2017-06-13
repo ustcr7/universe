@@ -7,6 +7,7 @@ Actor::Actor()
 {
 	memset(_name, 0, sizeof(_name));
 	_id = 0;
+	_connId = 0;
 }
 int Actor::SetName(const char *name)
 {
@@ -29,6 +30,16 @@ int Actor::SetId(u64 id)
 u64 Actor::GetId() const
 {
 	return _id;
+}
+
+int Actor::SetConnId(u64 connId)
+{
+	_connId = connId;
+	return 0;
+}
+u64 Actor::GetConnId() const
+{
+	return _connId;
 }
 
 const Pos* Actor::GetPos() const

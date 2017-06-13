@@ -48,3 +48,23 @@ void   ActorMgr::FreeActor(u64 id)
 	delete actor;
 	actorMap.erase(id);
 }
+
+int ActorMgr::DumpAllActors(Actor **actorArr, int *actorCnt)
+{
+	int ret = 0;
+	massert_retval(actorArr != nullptr && actorCnt != nullptr, ERR_INVALID_PARAM);
+
+	int maxCnt = *actorCnt;
+	*actorCnt = 0;
+	for (std::map<u64, Actor*>::iterator iter = actorMap.begin(); iter != actorMap.end(); ++iter)
+	{
+		if (*actorCnt >= maxCnt)
+		{
+			break;
+		}
+		actorArr[*actorCnt] = iter->second;
+		*actorCnt = *actorCnt + 1;
+	}
+
+	return 0;
+}

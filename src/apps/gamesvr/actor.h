@@ -20,6 +20,8 @@ public:
 	const char* GetName() const;
 	int SetId(u64 id);
 	u64 GetId() const;
+	int SetConnId(u64 connId);
+	u64 GetConnId() const;
 	const Pos* GetPos() const;
 	int SetPos(const Pos *pos);
 	int GetSpeed()const;
@@ -41,6 +43,9 @@ public:
 	}
 private:
 	u64 _id;
+
+	u64 _connId;
+
 	char _name[128];
 	Pos cur_pos;    //actor current pos;
 	int speed;      //ÒÆ¶¯ËÙ¶È

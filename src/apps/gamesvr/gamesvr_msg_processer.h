@@ -3,6 +3,7 @@
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
 #include "../../common/base_type.h"
+#include "universe_cs.pb.h"
 
 class Pos;
 class Actor;
@@ -23,6 +24,12 @@ public:
 	int SendActorLogoutRsp(u64 connId, u64 id, int result);
 	int SendActorFullDataRsp(u64 connId, Actor *actor);
 	int SendActorSetPosRsp(u64 connId, u64 id, Pos *pos);
+	int SendForwardChatInfo(u64 connId
+		, ChatType chatType
+		, u64 srcActorid
+		, u64 dstActorId
+		, const char *content
+		, int content_len);
 
 private:
 	int SendMsgByTcpServer(ConnMsg *msg);

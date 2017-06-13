@@ -2,6 +2,7 @@
 #define __UNIVERSE_CHAT_H__
 
 #include "../../common/base_type.h"
+#include "universe_cs.pb.h"
 
 static const int MAX_CHAT_CONTENT_SIZE = 512;
 static const int MAX_CHAT_DST_COUNT = 32;
@@ -43,9 +44,12 @@ class Actor;
 class UvChatMgr
 {
 public:
-	int SendA2AChatMsg(Actor src_actor, Actor *dst_actor, int dst_actor_cnt, const char *content, int content_len); //actor to actor
-	int SendS2AChatMsg(Actor *dst_actor, int dst_actor_cnt, const char *content, int content_len);                  //sytem to actor
-	int BroadcastChatMsg(const char *content, int content_len);
+	int PersonalChatMsg(Actor *src_actor, Actor *dst_actor, const char *content, int content_len);  //私聊
+	int AroundChatMsg(Actor *src_actor, const char *content, int content_len);   //附近聊天
+	int BroadcastChatMsg(Actor *src_actor, const char *content, int content_len);                                     //全服聊天
+
+private:
+	int ForwardChatMsg(ChatType chatType, Actor *src_actor, Actor *dst_actor, const char *content, int content_len);
 };
 
 #endif // !__UNIVERSE_CHAT_H__
