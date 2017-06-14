@@ -2,6 +2,7 @@
 #include "../../common/errcode.h"
 #include "../../common/base_type.h"
 #include "../../common/net/tcp_client.h"
+#include "../../common/util/str_util.h"
 #include "universe_cs.pb.h"
 #include <unistd.h>
 #include <vector>
@@ -23,29 +24,39 @@
 #include <cstddef>
 
 
-int main()
+int main(int argc, char **argv)
 {
+	if (argc < 3)
+	{
+		printf("usage ./moc_client name rid\n");
+		return - 1;
+	}
+
+	int my_actor_rid = atoi(argv[2]);
+	char my_name[100];
+	strncpy(my_name, argv[1], sizeof(my_name));
+	printf("moc client start name:%s rid:%d\n", my_name, my_actor_rid);
+
     int ret = 0;
 
     TcpClient *tcpClient = TcpClient::GetInstance();
 	ret = tcpClient->connect("127.0.0.1", 6789);
 	massert_retval(ret == 0, ret);
 
-    //char buff[1024];
-	//size_t buff_len = 0;
-	
     while(true)
    	{
       	printf("please input command\n");
    	    char cmd[1024];		
 		std::cin.getline(cmd, 1024);
 
-		std::string cmdStr(cmd);
+		ResultStr result[10];
+		int result_cnt = sizeof(result) / sizeof(result[0]);
+		int ret = SplitStr(cmd, " ", result, &result_cnt);
+		massert_retval(ret == 0, ret);
 
-		int my_actor_rid = 12345678;
-		char my_name[100] = "wcc";
+		//std::string cmdStr(cmd);
 		
-		if(cmdStr.compare("send_reg_msg") == 0)
+		if(strcmp(result[0].str,"send_reg_msg") == 0)
 		{
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ);
@@ -53,35 +64,45 @@ int main()
 			msg.mutable_msgbody()->mutable_registereq()->set_name(my_name);
 		    tcpClient->sendMsg(&msg);
 	    }
-		if (cmdStr.compare("send_login_msg") == 0)
+		if (strcmp(result[0].str, "send_login_msg") == 0)
 		{
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGIN_REQ);
 			msg.mutable_msgbody()->mutable_loginreq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
-		if (cmdStr.compare("send_logout_msg") == 0)
+		if (strcmp(result[0].str, "send_logout_msg") == 0)
 		{
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGOUT_REQ);
 			msg.mutable_msgbody()->mutable_logoutreq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
-		if (cmdStr.compare("send_getdata_msg") == 0)
+		if (strcmp(result[0].str, "send_getdata_msg") == 0)
 		{
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_REQ);
 			msg.mutable_msgbody()->mutable_getfulldatareq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
-		if (cmdStr.compare("send_move_msg") == 0)
+		if (strcmp(result[0].str, "chat_msg") == 0)
+		{
+			int target_rid = atoi(result[1].str);
+			char *content = result[2].str;
+
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_CHAT_REQ);
+			//msg.mutable_msgbody()->mutable_b
+			tcpClient->sendMsg(&msg);
+		}
+		if (strcmp(result[0].str, "send_move_msg") == 0)
 		{
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_actorid(my_actor_rid);
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_MOVE_REQ);
 			ActorMoveReq *move_req = msg.mutable_msgbody()->mutable_movereq();
 
-			if (true)   //折线走
+			if (false)   //折线走
 			{
 				//(50,150) --> (200,100) --> (320,160) --> (0,0)
 				PathNode *node = move_req->add_paths();
@@ -155,7 +176,7 @@ int main()
 			}
 			tcpClient->sendMsg(&msg);
 		}
-		if(cmdStr.compare("recv_msg") == 0)
+		if(strcmp(result[0].str, "recv_msg") == 0)
 		{
 		    UniverseMsg msg;
 		    ret = tcpClient->recvMsg(&msg);
@@ -201,7 +222,7 @@ int main()
 			}
 			printf("recv server msg id:%d\n", msg.msghead().msgid());
 		}
-		if(cmdStr.compare("stop")==0)
+		if(strcmp(result[0].str, "stop")==0)
 		{
 		    tcpClient->close();
 			break;

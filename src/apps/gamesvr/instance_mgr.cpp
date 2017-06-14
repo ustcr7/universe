@@ -57,8 +57,8 @@ int Around::RemoveActor(Actor *actor)
 
 int Around::DumpAllActors(Actor **actorArr, int *actorCnt)
 {
-	int ret = 0;
-	massert_retval(actorArr != nullptr && actorCnt != nullptr, ERR_INVALID_PARAM);
+	//int ret = 0;
+	massert_retval(actorArr != NULL && actorCnt != NULL, ERR_INVALID_PARAM);
 
 	int maxCnt = *actorCnt;
 	*actorCnt = 0;
