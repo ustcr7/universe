@@ -165,3 +165,23 @@ int ActorReqHandle::ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt)
 
 	return 0;
 }
+
+int ActorReqHandle::ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, ChatType chatType, const char *content)
+{
+	massert_retval(content != NULL, ERR_INVALID_PARAM);
+	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
+	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
+	
+	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
+	massert_retval(actor_mgr != NULL, ERR_INVALID_PARAM);
+	Actor *dst_actor = actor_mgr->GetActorById(dstActorId);
+	massert_retval(dst_actor != NULL, ERR_INVALID_PARAM);
+
+	int ret = msgProcesser->SendForwardChatInfo(dst_actor->GetConnId()
+									, chatType
+									, srcActorid
+									, dstActorId
+									, content);
+	massert_retval(ret == 0, ret);
+	return 0;
+}

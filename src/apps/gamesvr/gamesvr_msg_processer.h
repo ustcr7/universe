@@ -28,8 +28,7 @@ public:
 		, ChatType chatType
 		, u64 srcActorid
 		, u64 dstActorId
-		, const char *content
-		, int content_len);
+		, const char *content);
 
 private:
 	int SendMsgByTcpServer(ConnMsg *msg);

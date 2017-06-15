@@ -73,6 +73,13 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 		ret = req_handle->ActorMoveReq(connId, actor_rid, pos, pos_cnt);
 		break;
 	}
+	case UNIVERSE_MSG_ID_CHAT_REQ:
+	{
+		u64 actor_rid = msg->msghead().actorid();
+		const ChatInfo &chatInfo = msg->msgbody().chatreq().chatinfo();
+		ret = req_handle->ActorChatReq(connId, actor_rid, chatInfo.dstid(), chatInfo.type(), chatInfo.content().c_str());
+		break;
+	}
 	default:
 	{
 		massert_retval(0, ERR_INVALID_PARAM);
@@ -145,9 +152,9 @@ int GamesvrMsgProcesser::SendForwardChatInfo(u64 connId
 						, ChatType chatType
 						, u64 srcActorid
 						, u64 dstActorId
-						, const char *content
-						, int content_len)
+						, const char *content)
 {
+	printf("forward chat msg from:%llu to %llu type;%d, content:%s\n", srcActorid, dstActorId, (int)chatType, content);
 	ConnMsg connMsg;
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;

@@ -24,8 +24,7 @@
 #include "universe_cs.pb.h"
 
 int main(int argc, char **argv)
-{
-	if (argc < 3)
+{	if (argc < 3)
 	{
 		printf("usage ./moc_client name rid\n");
 		return - 1;
@@ -39,7 +38,7 @@ int main(int argc, char **argv)
     int ret = 0;
 
     TcpClient *tcpClient = TcpClient::GetInstance();
-	ret = tcpClient->connect("127.0.0.1", 6789);
+	ret = tcpClient->connect("10.154.142.48", 6789);
 	massert_retval(ret == 0, ret);
 
     while(true)
@@ -84,7 +83,7 @@ int main(int argc, char **argv)
 			msg.mutable_msgbody()->mutable_getfulldatareq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
-		if (strcmp(result[0].str, "chat_msg") == 0)
+		if (strcmp(result[0].str, "send_chat_msg") == 0)
 		{
 			int target_rid = atoi(result[1].str);
 			char *content = result[2].str;

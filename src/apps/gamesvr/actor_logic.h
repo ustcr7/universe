@@ -1,6 +1,7 @@
 #ifndef __H_ACTOR_LOGIC__
 #define __H_ACTOR_LOGIC__
 #include "../../common/base_type.h"
+#include "universe_cs.pb.h"
 //WCC_TODO: put all logic here, when logic is too complex, devide logic to different files
 
 struct Pos;
@@ -15,6 +16,7 @@ public:
 	int ActorLogoutReq(u64 conn_id, u64 id);
 	int ActorGetFullData(u64 conn_id, u64 id);
 	int ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt);
+	int ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, ChatType chatType, const char *content);
 private:
 };
 
