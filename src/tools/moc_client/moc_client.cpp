@@ -3,7 +3,6 @@
 #include "../../common/base_type.h"
 #include "../../common/net/tcp_client.h"
 #include "../../common/util/str_util.h"
-#include "universe_cs.pb.h"
 #include <unistd.h>
 #include <vector>
 #include <vector>
@@ -22,7 +21,7 @@
 #include <iostream>
 #include <stddef.h>
 #include <cstddef>
-
+#include "universe_cs.pb.h"
 
 int main(int argc, char **argv)
 {
@@ -92,7 +91,10 @@ int main(int argc, char **argv)
 
 			UniverseMsg msg;
 			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_CHAT_REQ);
-			//msg.mutable_msgbody()->mutable_b
+			ChatInfo *chat_info = msg.mutable_msgbody()->mutable_chatreq()->mutable_chatinfo();
+			chat_info->set_type(CHAT_TYPE_PRIVATE);
+			chat_info->set_content(content);
+			chat_info->set_dstid(target_rid);
 			tcpClient->sendMsg(&msg);
 		}
 		if (strcmp(result[0].str, "send_move_msg") == 0)
@@ -213,6 +215,14 @@ int main(int argc, char **argv)
 			case UNIVERSE_MSG_ID_ACTOR_MOVE_RSP:
 			{
 				printf("recv move resp\n");
+				break;
+			}
+			case UNIVERSE_MSG_ID_FORWRARD_CHAT:
+			{
+				printf("recv forward char msg\n");
+				const ChatInfo &chatinfo = msg.msgbody().forwardchatinfo().chatinfo();
+				printf("actor:%d chat to you:%s\n", (int)chatinfo.dstid(), chatinfo.content().c_str());
+		        break;
 			}
 			default :
 			{
