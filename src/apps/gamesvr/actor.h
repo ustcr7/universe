@@ -42,11 +42,12 @@ public:
 		return 0;
 	}
 private:
+	//基础数据
 	u64 _id;
-
 	u64 _connId;
-
 	char _name[128];
+
+	//位置相关数据
 	Pos cur_pos;    //actor current pos;
 	int speed;      //移动速度
 
@@ -55,6 +56,8 @@ private:
 	u64 move_timerid;   //移动定时器
 
 	u64 instance_id; //玩家当前所在instance
+
+	//战斗模块数据
 };
 
 
