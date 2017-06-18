@@ -121,6 +121,23 @@ int Instance::LeaveActor(Actor *actor)
 	return 0;
 }
 
+bool Instance::IsActorInInstance(const Actor *actor) const
+{
+	massert_retval(actor != NULL, false);
+
+	return actor->GetInstanceId() == GetInstanceMid();
+}
+
+int Instance::GetActorDistance(const Actor *lhs_actor, const Actor *rhs_actor) const
+{
+	if(!IsActorInInstance(lhs_actor) || !IsActorInInstance(rhs_actor))
+	{
+	    return ERR_INST_NOT_IN_INSTANCE;
+	}
+
+	return lhs_actor->GetPos()->GetDistanceFromPos(rhs_actor->GetPos());
+}
+
 Around* Instance::GetAroundByPos(const Pos *pos)
 {
 	int around_x = pos->GetX() / AROUND_WIDTH;
@@ -130,13 +147,13 @@ Around* Instance::GetAroundByPos(const Pos *pos)
 
 	return &around_list[around_x][around_y];
 }
-
-int Instance::GetMapId()
+ 
+int Instance::GetMapId() const 
 {
 	return map_id;
 }
 
-int Instance::GetActorCount()
+int Instance::GetActorCount() const
 {
 	return actor_count;
 }

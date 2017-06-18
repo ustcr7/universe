@@ -42,18 +42,6 @@ u64 Actor::GetConnId() const
 	return _connId;
 }
 
-const Pos* Actor::GetPos() const
-{
-	return &cur_pos;
-}
-
-int Actor::SetPos(const Pos *pos)
-{
-	massert_retval(pos != NULL, ERR_INVALID_PARAM);
-	cur_pos = *pos;
-	printf("actor set new pos x:%d y:%d\n", pos->GetX(), pos->GetY());
-	return 0;
-}
 
 int Actor::GetSpeed()const
 {
@@ -65,18 +53,6 @@ int Actor::SetSpeed(int s)
 	speed = s;
 	printf("actor set speed %d\n", speed);
 	return 0;
-}
-
-int Actor::SetInstanceId(u64 id)
-{
-	instance_id = id;
-	printf("FOR DEBUG::::::::::::::::;actor send instance id:%llu\n", id);
-	return 0;
-}
-
-u64 Actor::GetInstanceId()
-{
-	return instance_id;
 }
 
 int Actor::GetCurPathIndex()

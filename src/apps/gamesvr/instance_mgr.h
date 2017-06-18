@@ -46,19 +46,26 @@ public:
 	int EnterActor(Actor *actor);
 	int LeaveActor(Actor *actor);
 	Around* GetAroundByPos(const Pos *pos);
+	bool IsActorInInstance(const Actor *actor) const;
+	int GetActorDistance(const Actor *lhs_actor, const Actor *rhs_actor) const;
+
 
 	void SetInstanceMid(u64 id)
 	{
 		mid = id;
 	}
+	u64 GetInstanceMid() const
+	{
+		return mid;
+	}
 
-	int GetMapId();
+	int GetMapId() const;
 	void SetMapId(int id)
 	{
 		map_id = id;
 	}
 
-	int GetActorCount();
+	int GetActorCount() const;
 	int DecActorCount();
 	int IncActorCount();
 private:

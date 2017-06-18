@@ -113,6 +113,21 @@ int UvTimer::RunTimer()
 	return 0;
 }
 
+//返回当前的绝对时间(单位:毫秒)
+u64 GetCurMsTime()
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	u64 cur_tm_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	return cur_tm_ms;
+}
+
+//返回当前的绝对时间(单位:秒)
+u32 GetCurTime()
+{
+	return (u32)time(0);
+}
+
 //获取从系统开始运行,到当前时刻走过的毫秒数
 u64  UvTimer::GetCurRuntimeMs()
 {

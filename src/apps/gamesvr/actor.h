@@ -3,6 +3,7 @@
 
 #include "../../common/base_type.h"
 #include "gamesvr_def.h"
+#include "uv_unit.h"
 static const int MAX_MOVE_PATH_COUNT = 30;
 
 struct Pos;
@@ -12,7 +13,7 @@ struct MovePath
 	Pos paths[MAX_MOVE_PATH_COUNT];
 };
 
-class Actor
+class Actor : public Unit
 {
 public:
 	Actor();
@@ -22,12 +23,8 @@ public:
 	u64 GetId() const;
 	int SetConnId(u64 connId);
 	u64 GetConnId() const;
-	const Pos* GetPos() const;
-	int SetPos(const Pos *pos);
 	int GetSpeed()const;
 	int SetSpeed(int s);
-	int SetInstanceId(u64 id);
-	u64 GetInstanceId();
 
 	int GetCurPathIndex();
 	int SetCurPathIndex(int index);
@@ -47,15 +44,12 @@ private:
 	u64 _connId;
 	char _name[128];
 
-	//位置相关数据
-	Pos cur_pos;    //actor current pos;
+
 	int speed;      //移动速度
 
 	MovePath move_path;
 	int cur_path_index; //当前移动到哪一段了
 	u64 move_timerid;   //移动定时器
-
-	u64 instance_id; //玩家当前所在instance
 
 	//战斗模块数据
 };

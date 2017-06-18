@@ -54,15 +54,16 @@ public:
 
 	int RunTimer();                  //指定到期的定时器
 
+	u64 GetCurMsTime();              //返回当前的绝对时间(单位:毫秒)
+	u32 GetCurTime();                //返回当前的绝对时间(单位:秒)
+	  
 private:
 	std::list<u64> tv_timer_lists[TV_SLOT_NUM];
 
 	u64 last_runtime_ms;  //上次跑到的毫秒数
 	u64 start_ms; //系统开始时刻的毫秒数
 
-	u64 GetCurRuntimeMs();
-
-
+	u64 GetCurRuntimeMs();           //返回系统从开始运行消逝的毫秒数
 	int SetLastRuntimeMs(u64 ms);
 	u64 GetLastRuntimeMs();
 
@@ -72,7 +73,5 @@ private:
 	void FreeTimerData(u64 mid);
 	std::map<u64, TimerData*> timer_data_map;
 };
-
-
 
 #endif // ! __UNIVERSE_TIMER_H__

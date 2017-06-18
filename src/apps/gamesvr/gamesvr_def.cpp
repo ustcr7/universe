@@ -1,4 +1,8 @@
 #include "gamesvr_def.h"
+#include "gamesvr_msg_processer.h"
+#include "../../common/massert.h"
+#include "../../common/errcode.h"
+#include <cmath>
 
 Pos::Pos()
 {
@@ -27,4 +31,11 @@ int Pos::GetX() const
 int Pos::GetY() const
 {
 	return _y;
+}
+
+int Pos::GetDistanceFromPos(const Pos* pos) const
+{
+	massert_retval(pos != NULL, 0);
+
+	return sqrt(pow(GetX() - pos->GetX(), 2) + pow(GetY() - pos->GetY(),2) );
 }

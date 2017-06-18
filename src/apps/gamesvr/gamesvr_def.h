@@ -10,6 +10,7 @@ public:
 	int SetY(int y);
 	int GetX() const;
 	int GetY() const;
+	int GetDistanceFromPos(const Pos* pos) const;
 private:
 	int _x;
 	int _y;

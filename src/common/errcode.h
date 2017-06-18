@@ -12,6 +12,18 @@ enum UNIVERSE_ERRCODE{
 	ERR_BAD_ALLOC                     = -10007,
 	ERR_NOT_ENOUGH                    = -10008,
 	ERR_ALREADY_EXISTS                = -10009,
+
+
+	//-----spell error code------
+	ERR_SPELL_NOT_LEARNED             = -20001,
+	ERR_SPELL_IN_CD                   = -20002,
+	ERR_SPELL_TOO_FAR_AWAY            = -20003, //距离过远无法施法
+	ERR_SPELL_MP_NOT_ENOUGH           = -20004, //魔法值不够
+
+	//-----instance error code -------
+	ERR_INST_NOT_IN_INSTANCE          = -30001,
+	ERR_INST_NOT_IN_SAME_INSTANCEE    = -30002,
+
 };
 
 
