@@ -42,7 +42,7 @@ public:
 		return 0;
 	}
 private:
-	//基础数据
+	//基础数据  //WCC_TODO:把id,name也移到unit中
 	u64 _id;
 	u64 _connId;
 	char _name[128];

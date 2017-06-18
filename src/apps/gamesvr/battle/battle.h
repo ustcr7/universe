@@ -6,6 +6,7 @@
 //技能列表 : [spellid, last_cast_time]    资源:[spellid, effect_type:(伤害/治疗), effect_value, 消耗mp值, 冷却时间, 攻击范围]
 #include "../../common/base_type.h"
 #include "battle_const.h"
+#include "../uv_unit.h"
 class Actor;
 
 //-------------------属性数据---------------------
@@ -68,8 +69,8 @@ private:
 class SpellMgr
 {
 public:
-    int UvBattleCastSpell(Actor *caster, Actor *target, int spell_id); //目前仅支持针对单体的技能
-
+	static SpellMgr* GetInstance();
+    int UvBattleCastSpell(Unit *caster, Unit *target, int spell_id); //目前仅支持针对单体的技能
 };
 
 
