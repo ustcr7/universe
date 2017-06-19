@@ -77,6 +77,16 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	actor->SetName(db_actor.GetName());
 	actor->SetSpeed(100);  //1m/s
 
+	//初始化属性
+	UnitAttr* attr = actor->GetMutableUnitAttr();
+	attr->SetAttr(ACTOR_ATTR_HP, 10000); //默认10000血
+	attr->SetAttr(ACTOR_ATTR_MP, 10000); //默认10000魔
+	attr->SetAttr(ACTOR_ATTR_DAMAGE, 100); //默认100伤害
+
+	//初始化状态
+	UnitState* state = actor->GetMutableUnitState();
+	state->SetUnitState(UV_UNIT_STATE_ALIVE);
+
 	//enter instance
 	EnterInstanceParam enter_param;
 	enter_param.SetMapId(10000);
@@ -184,4 +194,20 @@ int ActorReqHandle::ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, Cha
 									, content);
 	massert_retval(ret == 0, ret);
 	return 0;
+}
+
+int ActorReqHandle::ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid)
+{
+	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
+	Actor *actor = actor_mgr->GetActorById(actor_rid);
+	massert_retval(actor != NULL, ERR_INVALID_PARAM);
+
+	UnitSpellBook *spell_book = actor->GetMutableSpellBook();
+	if (spell_book->GetUnitSpellInfoById(spellid) != NULL)
+	{
+		printf("already learned spell %d\n", spellid);
+		return -1;
+	}
+
+	UnitSpellInfo spl_info;
 }

@@ -80,6 +80,12 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 		ret = req_handle->ActorChatReq(connId, actor_rid, chatInfo.dstid(), chatInfo.type(), chatInfo.content().c_str());
 		break;
 	}
+	case UNIVERSE_MSG_ID_LEARN_SPELL_REQ:
+	{
+		u64 actor_rid = msg->msghead().actorid();
+		const LearSpellReq &req = msg->msgbody().learnspellreq();
+		ret = req_handle->ActorLearnSpellReq(connId, actor_rid, req.spellid());
+	}
 	default:
 	{
 		massert_retval(0, ERR_INVALID_PARAM);

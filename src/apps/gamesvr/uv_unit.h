@@ -8,6 +8,11 @@ class  Pos;
 class Unit
 {
 public:
+	Unit()
+	{
+		instance_id = 0;
+	}
+
 	UnitAttr* GetMutableUnitAttr();
 	const UnitAttr* GetUnitAttr()const;
 	UnitSpellBook* GetMutableSpellBook();

@@ -36,7 +36,7 @@ int UnitAttr::IncAttr(ACTOR_ATTR_TYPE type, u64 value)
 	return 0;
 }
 
-int UnitSpellInfo::GetSpellId()
+int UnitSpellInfo::GetSpellId() const
 {
 	return spell_id;
 }
@@ -44,7 +44,7 @@ void UnitSpellInfo::SetSpellId(int param_spell_id)
 {
 	spell_id = param_spell_id;
 }
-u32 UnitSpellInfo::GetLastCastTime()
+u32 UnitSpellInfo::GetLastCastTime() const
 {
 	return last_cast_time;
 }
@@ -53,7 +53,7 @@ void UnitSpellInfo::SetLastCastTime(u32 tm)
 	last_cast_time = tm;
 }
 
-bool UnitSpellInfo::IsSpellInCd(u32 cur_time)
+bool UnitSpellInfo::IsSpellInCd(u32 cur_time) const
 {
 	const SpellRes *spl_res = SpellResMgr::GetInstance()->GetSpellResById(spell_id);
 	massert_retval(spl_res != NULL, true);
@@ -77,6 +77,27 @@ UnitSpellInfo* UnitSpellBook::GetUnitSpellInfoById(int spl_id)
 		}
 	}
 	return NULL;
+}
+
+int UnitSpellBook::AddUnitSpellInfo(const UnitSpellInfo* spellInfo)
+{
+	massert_retval(spellInfo != NULL, ERR_INVALID_PARAM);
+	if (GetUnitSpellInfoById(spellInfo->GetSpellId()) != NULL)
+	{
+		return ERR_ALREADY_EXISTS;
+	}
+
+	if (IsBookFull())
+	{
+		return ERR_NOT_ENOUGH;
+	}
+
+	//wcc_todo:Ìí¼Óµ½bookÖÐ
+}
+
+bool UnitSpellBook::IsBookFull()
+{
+	return spell_cnt >= (int)(sizeof(unit_spells)/sizeof(unit_spells[0]));
 }
 
 SpellMgr* SpellMgr::GetInstance()

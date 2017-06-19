@@ -17,6 +17,9 @@ enum UniverseMsgId
 	UNIVERSE_MSG_ID_CHAT_REQ                       = 13;
 	UNIVERSE_MSG_ID_CHAT_RSP                       = 14;
 	UNIVERSE_MSG_ID_FORWRARD_CHAT                  = 15;
+	UNIVERSE_MSG_ID_LEARN_SPELL_REQ                = 16;
+	UNIVERSE_MSG_ID_LEARN_SPELL_RSP                = 17;
+
 }
 
 message UniverseMsgHead
@@ -124,6 +127,17 @@ message ForwardChatInfo
     optional ChatInfo chatInfo   = 1;
 }
 
+message LearnSpellReq
+{
+    optional int32 spellId       = 1;
+}
+
+message LearnSpellRsp
+{
+    optional int32 spellId       = 1;
+	optional int32 result        = 2;
+}
+
 message UniverseMsgBody
 {
     optional ActorRegisteReq             registeReq          = 1;
@@ -141,6 +155,8 @@ message UniverseMsgBody
 	optional ChatReq                     chatReq             = 13;
 	optional ChatRsp                     chatRsp             = 14;
 	optional ForwardChatInfo             forwardChatInfo     = 15;  //server-->client,其他client发来的聊天消息
+	optional LearnSpellReq               learnSpellReq       = 16;
+	optional LearnSpellRsp               learnSpellRsp       = 17;
 }
 
 message UniverseMsg

@@ -14,6 +14,10 @@ class Actor;
 class UnitAttr
 {
 public:
+	UnitAttr()
+	{
+		memset(attrs, 0, sizeof(attrs));
+	}
 	int SetAttr(ACTOR_ATTR_TYPE type, u64 value);
 	int DecAttr(ACTOR_ATTR_TYPE type, u64 value);
 	int IncAttr(ACTOR_ATTR_TYPE type, u64 value);
@@ -26,11 +30,16 @@ private:
 class UnitSpellInfo
 {
 public:
-	int GetSpellId();
+	UnitSpellInfo()
+	{
+		spell_id = 0;
+		last_cast_time = 0;
+	}
+	int GetSpellId() const;
 	void SetSpellId(int spell_id);
-	u32 GetLastCastTime();
+	u32 GetLastCastTime() const;
 	void SetLastCastTime(u32 tm);
-	bool IsSpellInCd(u32 cur_time);
+	bool IsSpellInCd(u32 cur_time) const;
 private:
 	int spell_id;
 	u32 last_cast_time;
@@ -40,10 +49,17 @@ static const int MAX_UNIT_SPELL_COUNT = 128;
 class UnitSpellBook
 {
 public:
+	UnitSpellBook()
+	{
+		spell_cnt = 0;
+	}
 	UnitSpellInfo* GetUnitSpellInfoById(int spl_id);
+	int AddUnitSpellInfo(const UnitSpellInfo* spellInfo);
 private:
 	int spell_cnt;
 	UnitSpellInfo unit_spells[MAX_UNIT_SPELL_COUNT];
+
+	bool IsBookFull();
 };
 
 //-------------------×´Ì¬Êý¾Ý---------------------
