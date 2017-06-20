@@ -10,8 +10,15 @@ class Unit
 public:
 	Unit()
 	{
+		memset(_name, 0, sizeof(_name));
+		_id = 0;
 		instance_id = 0;
 	}
+
+	int SetName(const char *name);
+	const char* GetName() const;
+	int SetId(u64 id);
+	u64 GetId() const;
 
 	UnitAttr* GetMutableUnitAttr();
 	const UnitAttr* GetUnitAttr()const;
@@ -26,6 +33,9 @@ public:
 	const Pos* GetPos() const;
 	int SetPos(const Pos *pos);
 private:
+	u64 _id;
+	char _name[128];
+
 	UnitAttr attr;
 	UnitSpellBook spellBook;
 	UnitState unitState;

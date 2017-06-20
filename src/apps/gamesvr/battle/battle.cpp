@@ -92,7 +92,10 @@ int UnitSpellBook::AddUnitSpellInfo(const UnitSpellInfo* spellInfo)
 		return ERR_NOT_ENOUGH;
 	}
 
-	//wcc_todo:Ìí¼Óµ½bookÖÐ
+	unit_spells[spell_cnt] = *spellInfo;
+	spell_cnt++;
+
+	return 0;
 }
 
 bool UnitSpellBook::IsBookFull()
@@ -113,14 +116,15 @@ SpellMgr* SpellMgr::GetInstance()
 int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 {
 	int ret = 0;
-	massert_retval(caster != target, ERR_INVALID_PARAM);
+	massert_retval(caster != NULL && target != NULL, ERR_INVALID_PARAM);
+	printf("caster %s cast spell %d to target %s\n", caster->GetName(), spell_id, target->GetName());
 
 	SpellResMgr *spl_res_mgr = SpellResMgr::GetInstance();
 	const SpellRes *spl_res = spl_res_mgr->GetSpellResById(spell_id);
 	massert_retval(spl_res != NULL, ERR_NOT_FOUND);
 
 	//find spell info from actor spell_book
-	UnitSpellBook *spl_book = caster->GetSpellBook();
+	UnitSpellBook *spl_book = caster->GetMutableSpellBook();
 	massert_retval(spl_book != NULL, ERR_INVALID_ARG);
 
 	UnitSpellInfo* unit_spl_info = spl_book->GetUnitSpellInfoById(spell_id);
@@ -160,7 +164,7 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 	caster->GetMutableUnitAttr()->DecAttr(ACTOR_ATTR_MP, cost_mp);
 
 	//damage
-	int effect_type = spl_res->GetEffectType();
+	UV_SPELL_EFFECT_TYPE effect_type = spl_res->GetEffectType();
 	u64 effect_value = spl_res->GetEffectValue();
 
 	ret = UvBattleExecuteSpellEffect(target, effect_type, effect_value);

@@ -86,6 +86,12 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 		const LearSpellReq &req = msg->msgbody().learnspellreq();
 		ret = req_handle->ActorLearnSpellReq(connId, actor_rid, req.spellid());
 	}
+	case UNIVERSE_MSG_ID_CAST_SPELL_REQ:
+	{
+		u64 actor_rid = msg->msghead().actorid();
+		const CastSpellReq *req = &msg->msgbody().castspellreq();
+		ret = req_handle->ActorCastSpellReq(connId, actor_rid, req->targertid(), req->spellid());
+	}
 	default:
 	{
 		massert_retval(0, ERR_INVALID_PARAM);
@@ -169,6 +175,19 @@ int GamesvrMsgProcesser::SendForwardChatInfo(u64 connId
 	info->set_content(content);
 	info->set_type(chatType);
 
+	SendMsgByTcpServer(&connMsg);
+	return 0;
+}
+
+int GamesvrMsgProcesser::SendLearnSpellRsp(u64 connId, int spellid, int result)
+{
+	ConnMsg connMsg;
+	connMsg.connId = connId;
+	UniverseMsg *msgData = &connMsg.msg;
+	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_LEARN_SPELL_RSP);
+	LearnSpellRsp* rsp = msgData->mutable_msgbody()->mutable_learnspellrsp();
+	rsp->set_spellid(spellid);
+	rsp->set_result(result);
 	SendMsgByTcpServer(&connMsg);
 	return 0;
 }

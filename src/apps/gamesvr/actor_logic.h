@@ -18,6 +18,7 @@ public:
 	int ActorMoveReq(u64 conn_id, u64 id, Pos *pos, int pos_cnt);
 	int ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, ChatType chatType, const char *content);
 	int ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid);
+	int ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid, int spellid);
 private:
 };
 

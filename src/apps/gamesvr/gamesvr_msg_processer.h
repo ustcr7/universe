@@ -29,6 +29,7 @@ public:
 		, u64 srcActorid
 		, u64 dstActorId
 		, const char *content);
+	int SendLearnSpellRsp(u64 connId, int spellid, int result);
 
 private:
 	int SendMsgByTcpServer(ConnMsg *msg);

@@ -17,10 +17,6 @@ class Actor : public Unit
 {
 public:
 	Actor();
-	int SetName(const char *name);
-	const char* GetName() const;
-	int SetId(u64 id);
-	u64 GetId() const;
 	int SetConnId(u64 connId);
 	u64 GetConnId() const;
 	int GetSpeed()const;
@@ -40,9 +36,7 @@ public:
 	}
 private:
 	//基础数据  //WCC_TODO:把id,name也移到unit中
-	u64 _id;
 	u64 _connId;
-	char _name[128];
 
 
 	int speed;      //移动速度

@@ -5,6 +5,7 @@
 #include "../../common/timer/uv_timer.h"
 #include "../../proto/universe_cs.pb.h"
 #include "gamesvr_msg_processer.h"
+#include "battle/battle_res.h"
 #include "instance_mgr.h"
 #include <unistd.h>
 #include <ctime>
@@ -83,6 +84,10 @@ int main()
 	UvTimer *timer = UvTimer::GetSingleInstance();
 	massert_retval(timer != NULL, ERR_BAD_ALLOC);
 	timer->InitTimer();
+
+	//技能模块初始化
+	SpellResMgr *spell_res_mgr = SpellResMgr::GetInstance();
+	spell_res_mgr->InitSpellRes();
 
 	if(false)
 	{

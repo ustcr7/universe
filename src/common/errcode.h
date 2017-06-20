@@ -19,6 +19,7 @@ enum UNIVERSE_ERRCODE{
 	ERR_SPELL_IN_CD                   = -20002,
 	ERR_SPELL_TOO_FAR_AWAY            = -20003, //距离过远无法施法
 	ERR_SPELL_MP_NOT_ENOUGH           = -20004, //魔法值不够
+	ERR_SPELL_ALREADY_LEARNED         = -20005, //该技能已经学会
 
 	//-----instance error code -------
 	ERR_INST_NOT_IN_INSTANCE          = -30001,

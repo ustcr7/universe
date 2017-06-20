@@ -2,13 +2,19 @@
 #define  __UV_BATTLE_RES_H__
 
 #include "battle_const.h"
+#include "../../common/base_type.h"
 #include <map>
 
 class SpellRes
 {
 public:
 	SpellRes();
-	SpellRes(int param_spell_id, UV_SPELL_EFFECT_TYPE param_effect_type, u64 param_effect_value, int param_cd_time, int param_cost_mp, int param_distance);
+	SpellRes(int param_spell_id
+		, UV_SPELL_EFFECT_TYPE param_effect_type
+		, u64 param_effect_value
+		, int param_cd_time
+		, int param_cost_mp
+		, int param_distance);
 	int GetSpell_id() const;
 	UV_SPELL_EFFECT_TYPE GetEffectType() const;
 	u64 GetEffectValue() const;

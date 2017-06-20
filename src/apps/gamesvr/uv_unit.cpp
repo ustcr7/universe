@@ -4,6 +4,29 @@
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
 
+int Unit::SetName(const char *name)
+{
+	strncpy(_name, name, sizeof(_name));
+
+	return 0;
+}
+
+const char* Unit::GetName() const
+{
+	return _name;
+}
+
+int Unit::SetId(u64 id)
+{
+	_id = id;
+	return 0;
+}
+
+u64 Unit::GetId() const
+{
+	return _id;
+}
+
 UnitAttr* Unit::GetMutableUnitAttr()
 {
 	return &attr;
@@ -32,7 +55,7 @@ const UnitState* Unit::GetUnitState() const
 int Unit::SetInstanceId(u64 id)
 {
 	instance_id = id;
-	printf("FOR DEBUG::::::::::::::::;actor send instance id:%llu\n", id);
+	printf("actor send instance id:%llu\n", id);
 	return 0;
 }
 
