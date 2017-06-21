@@ -18,8 +18,7 @@ int UvChatMgr::ForwardChatMsg(ChatType chatType, Actor *src_actor, Actor *dst_ac
 		, chatType
 		, src_actor->GetId()
 		, dst_actor->GetId()
-		, content
-		, content_len);
+		, content);
 	massert_retval(ret == 0, ret);
 
 	return 0;
@@ -52,6 +51,7 @@ int UvChatMgr::AroundChatMsg(Actor *src_actor, const char *content, int content_
 	{
 		ForwardChatMsg(CHAT_TYPE_AROUND, src_actor, actorArr[i], content, content_len);
 	}
+	return 0;
 }
 
 //WCC_TODO:所有玩家在一个函数中发送,待优化

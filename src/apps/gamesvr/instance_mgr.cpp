@@ -7,6 +7,7 @@
 #include "actor_logic.h"
 #include "actor.h"
 #include "instance_mgr.h"
+#include "gamesvr_def.h"
 
 
 Around::Around()

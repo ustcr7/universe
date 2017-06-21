@@ -4,6 +4,13 @@
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
 
+Unit::Unit()
+{
+	memset(_name, 0, sizeof(_name));
+	_id = 0;
+	instance_id = 0;
+}
+
 int Unit::SetName(const char *name)
 {
 	strncpy(_name, name, sizeof(_name));

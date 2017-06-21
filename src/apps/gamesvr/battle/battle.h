@@ -6,17 +6,13 @@
 //技能列表 : [spellid, last_cast_time]    资源:[spellid, effect_type:(伤害/治疗), effect_value, 消耗mp值, 冷却时间, 攻击范围]
 #include "../../../common/base_type.h"
 #include "battle_const.h"
-#include "../uv_unit.h"
 class Actor;
-
+class Unit;
 //-------------------属性数据---------------------
 class UnitAttr
 {
 public:
-	UnitAttr()
-	{
-		memset(attrs, 0, sizeof(attrs));
-	}
+	UnitAttr();
 	int SetAttr(ACTOR_ATTR_TYPE type, u64 value);
 	int DecAttr(ACTOR_ATTR_TYPE type, u64 value);
 	int IncAttr(ACTOR_ATTR_TYPE type, u64 value);
@@ -73,6 +69,7 @@ public:
 	int SetUnitState(UV_UNIT_STATE_TYPE state)
 	{
 		unitState = state;
+		return 0;
 	}
 	UV_UNIT_STATE_TYPE GetUnitState()
 	{

@@ -7,6 +7,8 @@ MODULE_OBJ=$(MODULE_NAME)d
 
 ALL_CPP = *.cpp
 ALL_CPP += move/*.cpp
+ALL_CPP += chat/*.cpp
+ALL_CPP += battle/*.cpp
 
 CFLAGS += -I .
 CFLAGS += -I ../../proto/

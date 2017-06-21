@@ -2,18 +2,13 @@
 #define  __UV_UNIT_H__
 
 #include "battle/battle.h"
-
+#include "gamesvr_def.h"
 class  Pos;
 
 class Unit
 {
 public:
-	Unit()
-	{
-		memset(_name, 0, sizeof(_name));
-		_id = 0;
-		instance_id = 0;
-	}
+	Unit();
 
 	int SetName(const char *name);
 	const char* GetName() const;

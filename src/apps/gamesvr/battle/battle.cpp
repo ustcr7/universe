@@ -7,13 +7,20 @@
 #include "../gamesvr_def.h"
 #include "battle_res.h"
 #include <algorithm>
-
+#include "../uv_unit.h"
+#include <string.h>
 SpellMgr* gs_spell_mgr = NULL;
+
+UnitAttr::UnitAttr()
+{
+	memset(attrs, 0, sizeof(attrs));
+}
 
 int UnitAttr::SetAttr(ACTOR_ATTR_TYPE type, u64 value)
 {
 	massert_retval(type >= 0 && type < ACTOR_ATTR_TYPE_MAX, ERR_INVALID_PARAM);
 	attrs[type] = value;
+	return 0;
 }
 u64 UnitAttr::GetAttr(ACTOR_ATTR_TYPE type) const
 {
@@ -125,7 +132,7 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 
 	//find spell info from actor spell_book
 	UnitSpellBook *spl_book = caster->GetMutableSpellBook();
-	massert_retval(spl_book != NULL, ERR_INVALID_ARG);
+	massert_retval(spl_book != NULL, ERR_INVALID_PARAM);
 
 	UnitSpellInfo* unit_spl_info = spl_book->GetUnitSpellInfoById(spell_id);
 	if (unit_spl_info == NULL)
@@ -157,7 +164,7 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 	//cost mp
 	u64 caster_cur_mp = caster->GetUnitAttr()->GetAttr(ACTOR_ATTR_MP);
 	int cost_mp = spl_res->GetCostMp();
-	if (caster_cur_mp < cost_mp)
+	if (caster_cur_mp < (u64)cost_mp)
 	{
 		return ERR_SPELL_MP_NOT_ENOUGH;
 	}
@@ -198,6 +205,7 @@ int SpellMgr::UvBattleExecuteSpellEffect(Unit *target, UV_SPELL_EFFECT_TYPE effe
 		massert_noeffect(0);
 		break;
 	}
+	return 0;
 }
 
 int SpellMgr::UvBattleExecuteDecHp(Unit *target, u64 dec_value)
@@ -211,15 +219,18 @@ int SpellMgr::UvBattleExecuteIncHp(Unit *target, u64 inc_value)
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
 
 	target->GetMutableUnitAttr()->IncAttr(ACTOR_ATTR_HP, inc_value);
+	return 0;
 }
 int SpellMgr::UvBattleExecuteDecMp(Unit *target, u64 dec_value)
 {
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
 
 	target->GetMutableUnitAttr()->DecAttr(ACTOR_ATTR_HP, dec_value);
+	return 0;
 }
 int SpellMgr::UvBattleExecuteIncMp(Unit *target, u64 inc_value)
 {
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
 	target->GetMutableUnitAttr()->IncAttr(ACTOR_ATTR_HP, inc_value);
+	return 0;
 }

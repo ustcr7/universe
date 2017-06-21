@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <cstring>
 #include <stdio.h>
+#include <time.h>
 
 static UvTimer *gs_uv_timer = NULL;
 
@@ -114,7 +115,7 @@ int UvTimer::RunTimer()
 }
 
 //返回当前的绝对时间(单位:毫秒)
-u64 GetCurMsTime()
+u64 UvTimer::GetCurMsTime()
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -123,7 +124,7 @@ u64 GetCurMsTime()
 }
 
 //返回当前的绝对时间(单位:秒)
-u32 GetCurTime()
+u32 UvTimer::GetCurTime()
 {
 	return (u32)time(0);
 }
