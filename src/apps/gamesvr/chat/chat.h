@@ -8,7 +8,7 @@ static const int MAX_CHAT_CONTENT_SIZE = 512;
 static const int MAX_CHAT_DST_COUNT = 32;
 class ChatContent
 {
-	const char content[MAX_CHAT_CONTENT_SIZE];
+	char content[MAX_CHAT_CONTENT_SIZE];
 	int contentSize;
 };
 

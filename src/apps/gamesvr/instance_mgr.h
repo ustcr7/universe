@@ -18,7 +18,7 @@ static const int AROUND_WIDTH = GRID_SIDE_LEN * AROUND_SIDE_LEN;   //AOURND ¿í¶È
 static const int AROUND_HEIGHT = GRID_SIDE_LEN * AROUND_SIDE_LEN;  //AROUND ¸ß¶È
 
 class Actor;
-
+class Pos;
 
 class Around
 {

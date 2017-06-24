@@ -227,7 +227,7 @@ int ActorReqHandle::ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid)
 
 int ActorReqHandle::ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid, int spellid)
 {
-	int ret = 0;
+	//int ret = 0;
 
 	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
 	Actor *caster = actor_mgr->GetActorById(actor_rid);

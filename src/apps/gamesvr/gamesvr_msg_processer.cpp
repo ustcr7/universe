@@ -83,14 +83,14 @@ int GamesvrMsgProcesser::RecvActorReq(u64 connId, const UniverseMsg *msg)
 	case UNIVERSE_MSG_ID_LEARN_SPELL_REQ:
 	{
 		u64 actor_rid = msg->msghead().actorid();
-		const LearSpellReq &req = msg->msgbody().learnspellreq();
+		const LearnSpellReq &req = msg->msgbody().learnspellreq();
 		ret = req_handle->ActorLearnSpellReq(connId, actor_rid, req.spellid());
 	}
 	case UNIVERSE_MSG_ID_CAST_SPELL_REQ:
 	{
 		u64 actor_rid = msg->msghead().actorid();
 		const CastSpellReq *req = &msg->msgbody().castspellreq();
-		ret = req_handle->ActorCastSpellReq(connId, actor_rid, req->targertid(), req->spellid());
+		ret = req_handle->ActorCastSpellReq(connId, actor_rid, req->targetid(), req->spellid());
 	}
 	default:
 	{
