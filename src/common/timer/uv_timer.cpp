@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <cstring>
 #include <stdio.h>
+#include <time.h>
 
 static UvTimer *gs_uv_timer = NULL;
 
@@ -125,7 +126,7 @@ u64 GetCurMsTime()
 //返回当前的绝对时间(单位:秒)
 u32 GetCurTime()
 {
-	return (u32)time(0);
+	return (u32)time((time_t*)NULL);
 }
 
 //获取从系统开始运行,到当前时刻走过的毫秒数
