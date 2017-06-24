@@ -198,6 +198,7 @@ int ActorReqHandle::ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, Cha
 
 int ActorReqHandle::ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid)
 {
+	printf("actor %llu learn spell %d\n", actor_rid, spellid);
 	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
 	Actor *actor = actor_mgr->GetActorById(actor_rid);
 	massert_retval(actor != NULL, ERR_INVALID_PARAM);
@@ -217,6 +218,8 @@ int ActorReqHandle::ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid)
 		spl_info.SetSpellId(spellid);
 		spl_info.SetLastCastTime(0);
 		ret = spell_book->AddUnitSpellInfo(&spl_info);
+		massert_noeffect(ret == 0);
+		printf("actor %llu add spell %d to spellbook ret:%d\n", actor_rid, spellid, ret);
 	} while (0);
 
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
@@ -228,11 +231,11 @@ int ActorReqHandle::ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid)
 int ActorReqHandle::ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid, int spellid)
 {
 	//int ret = 0;
-
+	printf("cast spell caster:%llu target:%llu spell:%d\n", actor_rid, target_rid, spellid);
 	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
 	Actor *caster = actor_mgr->GetActorById(actor_rid);
 	massert_retval(caster != NULL, ERR_INVALID_PARAM);
-	Actor *target = actor_mgr->GetActorById(actor_rid);
+	Actor *target = actor_mgr->GetActorById(target_rid);
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
 
 	SpellMgr *spl_mgr = SpellMgr::GetInstance();

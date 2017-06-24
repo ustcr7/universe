@@ -93,7 +93,7 @@ int TcpClient::sendMsg(UniverseMsg *msg){
 		printf("write failed %d, %d\n", (int)write_len, write_len);
 	    return -1;
 	}
-	printf("write success len %d, msg byte size:%d\n", write_len, msg_byte_len);
+	//printf("write success len %d, msg byte size:%d\n", write_len, msg_byte_len);
 	return 0;
 }
 

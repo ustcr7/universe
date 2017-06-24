@@ -197,7 +197,7 @@ int TcpServer::PushClientMsg(ConnMsg *connMsg)
 			, (int)data_len, write_len, strerror(errno));
 		massert_retval(0, -1);
 	}
-	printf("write success len %d\n", write_len);
+	//printf("write success len %d\n", write_len);
 
     return 0;
 }
@@ -331,7 +331,7 @@ int TcpServer::ReadDataFromClient(int clientFd)
 		return 0;
 	}
 
-    printf("read buffer len:%d\n", (int)buffer_len);
+    //printf("read buffer len:%d\n", (int)buffer_len);
     GetMsgLock();
 	//push to ring buffer
 

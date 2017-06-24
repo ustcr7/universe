@@ -66,7 +66,7 @@ bool UnitSpellInfo::IsSpellInCd(u32 cur_time) const
 	massert_retval(spl_res != NULL, true);
 
 	int cd_time = spl_res->GetCdTime();
-	if (last_cast_time + cd_time < cur_time)
+	if (last_cast_time + cd_time >= cur_time)
 	{
 		return true;
 	}
@@ -137,6 +137,7 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 	UnitSpellInfo* unit_spl_info = spl_book->GetUnitSpellInfoById(spell_id);
 	if (unit_spl_info == NULL)
 	{
+		printf("actor %llu not learn spell %d\n", caster->GetId(), spell_id);
 		return ERR_SPELL_NOT_LEARNED;
 	}
 
@@ -144,12 +145,14 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 	u32 cur_time = UvTimer::GetSingleInstance()->GetCurTime();
 	if (unit_spl_info->IsSpellInCd(cur_time))
 	{
+		printf("spell %d still in cd\n", spell_id);
 		return ERR_SPELL_IN_CD;
 	}
 
 	//check distance
 	if (caster->GetInstanceId() != target->GetInstanceId())
 	{
+		printf("caster in instance %llu ,target in instance %llu\n", caster->GetInstanceId(), target->GetInstanceId());
 		return ERR_INST_NOT_IN_SAME_INSTANCEE;
 	}
 	Instance *cast_inst = InstanceMgr::GetSingleInstance()->GetInstanceById(caster->GetInstanceId());
@@ -179,7 +182,6 @@ int SpellMgr::UvBattleCastSpell(Unit *caster, Unit *target, int spell_id)
 
 	//sync
 	//log
-
 	return 0;
 }
 
@@ -193,13 +195,13 @@ int SpellMgr::UvBattleExecuteSpellEffect(Unit *target, UV_SPELL_EFFECT_TYPE effe
 		UvBattleExecuteDecHp(target, effect_value);
 		break;
 	case UV_SPELL_EFFECT_INC_HP:
-		massert_noeffect(0); 
+		UvBattleExecuteIncHp(target, effect_value);
 		break;
 	case UV_SPELL_EFFECT_DEC_MP:
-		massert_noeffect(0);
+		UvBattleExecuteDecMp(target, effect_value);
 		break;
 	case UV_SPELL_EFFECT_INC_MP:
-		massert_noeffect(0);
+		UvBattleExecuteIncMp(target, effect_value);
 		break;
 	default:
 		massert_noeffect(0);
@@ -210,6 +212,7 @@ int SpellMgr::UvBattleExecuteSpellEffect(Unit *target, UV_SPELL_EFFECT_TYPE effe
 
 int SpellMgr::UvBattleExecuteDecHp(Unit *target, u64 dec_value)
 {
+	printf("unit %s dec hp %llu\n", target->GetName(), dec_value);
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
 	return target->GetMutableUnitAttr()->DecAttr(ACTOR_ATTR_HP, dec_value);
 }
@@ -217,20 +220,21 @@ int SpellMgr::UvBattleExecuteDecHp(Unit *target, u64 dec_value)
 int SpellMgr::UvBattleExecuteIncHp(Unit *target, u64 inc_value)
 {
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
-
+	printf("unit %s inc hp %llu\n", target->GetName(), inc_value);
 	target->GetMutableUnitAttr()->IncAttr(ACTOR_ATTR_HP, inc_value);
 	return 0;
 }
 int SpellMgr::UvBattleExecuteDecMp(Unit *target, u64 dec_value)
 {
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
-
+	printf("unit %s dec mp %llu\n", target->GetName(), dec_value);
 	target->GetMutableUnitAttr()->DecAttr(ACTOR_ATTR_HP, dec_value);
 	return 0;
 }
 int SpellMgr::UvBattleExecuteIncMp(Unit *target, u64 inc_value)
 {
 	massert_retval(target != NULL, ERR_INVALID_PARAM);
+	printf("unit %s inc mp %llu\n", target->GetName(), inc_value);
 	target->GetMutableUnitAttr()->IncAttr(ACTOR_ATTR_HP, inc_value);
 	return 0;
 }

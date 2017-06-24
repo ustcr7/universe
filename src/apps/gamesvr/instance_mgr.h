@@ -113,6 +113,7 @@ public:
 	u64           AllocInstance(int map_id);
 	void          FreeInstance(u64 instance_id);
 	Instance*     GetInstanceById(u64 instance_id);
+	Instance*     GetInstanceByMapid(u64 map_id);
 
 	int EnterActor(Actor *actor, EnterInstanceParam *enter_param);
 	int LeaveActor(Actor *actor);

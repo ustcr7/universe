@@ -76,6 +76,36 @@ int main(int argc, char **argv)
 			msg.mutable_msgbody()->mutable_logoutreq()->set_id(my_actor_rid);
 			tcpClient->sendMsg(&msg);
 		}
+		if (strcmp(result[0].str, "send_learnspell_msg") == 0)
+		{
+			if (result_cnt<2)
+			{
+				printf("Usage: send_learnspell_msg spellid\n");
+				break;
+			}
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_actorid(my_actor_rid);
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_LEARN_SPELL_REQ);
+			LearnSpellReq *req = msg.mutable_msgbody()->mutable_learnspellreq();
+			req->set_spellid(atoi(result[1].str));
+			
+			tcpClient->sendMsg(&msg);
+		}
+		if (strcmp(result[0].str, "send_castspell_msg") == 0)
+		{
+			if (result_cnt<3)
+			{
+				printf("Usage: send_castspell_msg spellid targetid\n");
+				break;
+			}
+			UniverseMsg msg;
+			msg.mutable_msghead()->set_actorid(my_actor_rid);
+			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_CAST_SPELL_REQ);
+			CastSpellReq *req = msg.mutable_msgbody()->mutable_castspellreq();
+			req->set_spellid(atoi(result[1].str));
+			req->set_targetid(atoll(result[2].str));
+			tcpClient->sendMsg(&msg);
+		}
 		if (strcmp(result[0].str, "send_getdata_msg") == 0)
 		{
 			UniverseMsg msg;

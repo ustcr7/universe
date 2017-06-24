@@ -222,6 +222,36 @@ Instance* InstanceMgr::GetInstanceById(u64 instance_id)
 	return iter->second;
 }
 
+//WCC_TODO:目前只有一种负载均衡策略:一向想一个副本分配玩家,直到副本达到最大人数
+Instance*     InstanceMgr::GetInstanceByMapid(u64 map_id)
+{
+	MapMgr *mapMgr = MapMgr::GetSingleInstance();
+	MapInfo *mapInfo = mapMgr->GetMapById(map_id);
+	massert_retval(mapInfo != NULL, NULL);
+	int max_actor_per_inst = mapInfo->GetMaxActorPerInstance();
+
+	for (std::map<u64, Instance*>::iterator iter = instances.begin()
+		; iter != instances.end()
+		; ++iter)
+	{
+		Instance *inst = iter->second;
+		if (inst->GetMapId() != (int)map_id)
+		{
+			continue;
+		}
+		if (inst->GetActorCount() >= max_actor_per_inst)
+		{
+			continue;
+		}
+
+		//other condition
+
+		return inst;
+	}
+
+	return NULL;
+}
+
 
 int InstanceMgr::EnterActor(Actor *actor, EnterInstanceParam *enter_param)
 {
@@ -250,11 +280,17 @@ int InstanceMgr::EnterActor(Actor *actor, EnterInstanceParam *enter_param)
 			}
 		}
 
+		int map_id = enter_param->GetMapId();
+		inst = GetInstanceByMapid(map_id);
+		if (inst != NULL)
+		{
+			break;
+		}
+		
 		massert_retval(enter_param->GetMapId() > 0, ERR_INVALID_PARAM);
-		u64 instance_id = AllocInstance(enter_param->GetMapId());
+		u64 instance_id = AllocInstance(map_id);
 		massert_retval(instance_id != 0 && instance_id != INVALID64, ERR_BAD_ALLOC);
 		inst = GetInstanceById(instance_id);
-
 	} while (0);
 
 	massert_retval(inst != NULL, ERR_BAD_ALLOC);
