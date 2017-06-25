@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+message DbPos
+{
+    optional int32 pos_x = 1;
+	optional int32 pos_y = 2;
+}
+
+message DbActorGameData
+{
+    optional int32 speed = 1;
+	optional DbPos pos   = 2;
+	repeated uint64 attr = 3;
+	optional uint64 instance_id = 4;
+
+	//WCC_TODO: UnitSpellBook spellBook;
+	//WCC_TODO: UnitState unitState;
+}
+
+	
+
