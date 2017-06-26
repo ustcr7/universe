@@ -1,10 +1,19 @@
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
+#include "../../common/timer/uv_timer.h"
 #include "actor_mgr.h"
 #include "actor.h"
+#include "db/gamesvr_db.h"
 
 
 static ActorMgr* gs_actor_mgr = NULL;
+
+ActorMgr::ActorMgr()
+{
+	UvTimer *timer = UvTimer::GetSingleInstance();
+	u64 dummy = 0;
+	timer->AddTimer(10, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
+}
 
 ActorMgr* ActorMgr::GetSingleInstance()
 {
@@ -66,5 +75,28 @@ int ActorMgr::DumpAllActors(Actor **actorArr, int *actorCnt)
 		*actorCnt = *actorCnt + 1;
 	}
 
+	return 0;
+}
+
+int ActorMgr::SaveAllActors()
+{
+	//actor全部存盘一次 //WCC_TODO分批存盘
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	for (std::map<u64, Actor*>::iterator iter = actorMap.begin(); iter != actorMap.end(); ++iter)
+	{
+		ActorDB db_actor;
+		db_actor.InitFromRuntimeActor(iter->second);
+
+		db_mgr->UpdateActor(&db_actor);
+	}
+	return 0;
+}
+
+int SaveActorTimeout(const char *callback_data, u32 callback_data_len)
+{
+	ActorMgr::GetSingleInstance()->SaveAllActors();
+	UvTimer *timer = UvTimer::GetSingleInstance();
+	u64 dummy = 0;
+	timer->AddTimer(10, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
 	return 0;
 }

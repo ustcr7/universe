@@ -5,7 +5,7 @@
 
 static const int MAX_ACTOR_NAME_SIZE = 128;
 static const int MAX_ACTOR_GAME_DATA_BLOB_SIZE = 65535;
-
+class Actor;
 //
 //actor_db:
 //actorid, name, level, gs, blob_data
@@ -14,14 +14,21 @@ static const int MAX_ACTOR_GAME_DATA_BLOB_SIZE = 65535;
 class ActorDB //玩家存盘数据
 {
 public:
+	int SetActorRid(u64 rid);
 	u64 GetActorRid() const;
+	int SetActorName(const char *param_name);
 	const char* GetActorName() const;
+	char * GetMutableActorName();
+	int SetGameDataBlob(const char *blob_data, int blob_size);
 	int GetGameDataBolbSize () const ;
 	const char *GetGameDataBlob () const ;
+	char *GetMutableGameDataBlob();
+
+	int InitFromRuntimeActor(const Actor *actor);
 private:
 	//基础数据单独成列,其他数据放在一个blob里
 	u64 actor_rid;
-	const char name[MAX_ACTOR_NAME_SIZE];
+	char name[MAX_ACTOR_NAME_SIZE];
 
 	int game_data_size;
 	char game_data[MAX_ACTOR_GAME_DATA_BLOB_SIZE];

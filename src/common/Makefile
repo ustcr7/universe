@@ -18,7 +18,6 @@ ALL_CPP += util/*.cpp
 CFLAGS += -I .
 CFLAGS += -I $(MYSQL_INCLUDE_PATH)
 #WCC_TODO 为提高项目独立性,可以把mysql的头文件拷贝到src/deps/mysql目录中
-CFLAGS += -I $(MYSQL_INCLUDE_PATH)
 
 $(MODULE_OBJ):$(ALL_CPP)
 	$(CPP) -c $(CFLAGS) $^  $(LDFLAGS)

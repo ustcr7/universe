@@ -3,6 +3,7 @@
 #include "../../common/base_type.h"
 #include "../../common/net/tcp_server.h"
 #include "../../common/timer/uv_timer.h"
+#include "../../common/db/db_util.h"
 #include "../../proto/universe_cs.pb.h"
 #include "gamesvr_msg_processer.h"
 #include "battle/battle_res.h"
@@ -89,6 +90,10 @@ int main()
 	SpellResMgr *spell_res_mgr = SpellResMgr::GetInstance();
 	spell_res_mgr->InitSpellRes();
 
+	//DB³õÊ¼»¯
+	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
+	massert_retval(db_util->Init() == 0, ERR_UNKNOWN);
+
 	if(false)
 	{
 		int cur_time = (int)std::time(0);
@@ -129,6 +134,11 @@ int main()
 
 		timer->RunTimer();
 	}
+
+
+	//fini
+
+	db_util->Fini();
 
 	return 0;
 }

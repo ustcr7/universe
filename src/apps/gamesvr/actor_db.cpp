@@ -4,6 +4,7 @@
 #include "actor.h"
 #include "actor_db.h"
 #include <map>
+#include "db/gamesvr_db.h"
 
 static ActorDbMgr *gs_actor_db_mgr = NULL;
 
@@ -36,6 +37,11 @@ int ActorDbMgr::InsertActorData(const Actor *actor)
 	memory_db.insert(std::make_pair(copy_actor.GetId(), copy_actor));
 
 	printf("ActorDbMgr:: actor db mgr insert actor:%llu success\n", copy_actor.GetId());
+
+	ActorDB db_actor;
+	db_actor.InitFromRuntimeActor(actor);
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	db_mgr->InsertActor(&db_actor);
 
 	return 0;
 }

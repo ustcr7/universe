@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "massert.h"
-#include "mysql.h"
-#include "db_util.h"
 
+#include "db_util.h"
 
 static UniverseDbUtil *db_util = NULL;
 MYSQL gs_mysql;
@@ -29,7 +28,7 @@ UniverseDbUtil* UniverseDbUtil::GetInstance()
 
 int UniverseDbUtil::Init()
 {
-    int ret = 0;
+    //int ret = 0;
 	if (mysql_library_init(0, NULL, NULL)) {
 		printf("could not initialize MySQL library\n");
 		exit(1);
@@ -39,20 +38,27 @@ int UniverseDbUtil::Init()
 	mysql = mysql_init(mysql);
 	massert_retval(mysql != NULL, -1);
 
-	mysql = mysql_real_connect(mysql, "127.0.0.1", dblUser, dbPasswd, "test_db", dbPort, NULL, 0);
+	mysql = mysql_real_connect(mysql, "127.0.0.1", dblUser, dbPasswd, "universe", dbPort, NULL, 0);
 	massert_retval(mysql != NULL, -1);
+
+	printf("connect to mysql success\n");
 	
 	return 0;
 }
 
 int UniverseDbUtil::Fini()
 {
-
-	mysql_close(mysql);
+	mysql_close(&gs_mysql);
 	mysql_library_end();
     return 0;
 }
 
+MYSQL* UniverseDbUtil::GetMysqlInstance()
+{
+	return &gs_mysql;
+}
+
+/*
 int Query(const char *sql_str, DB_QUERY_TYPE query_type, RESULT_HANDLE *ret_handle = NULL)
 {
 	ret = mysql_query(mysql, sql_str);
@@ -82,3 +88,4 @@ int Query(const char *sql_str, DB_QUERY_TYPE query_type, RESULT_HANDLE *ret_hand
 
 	return 0;
 }
+*/

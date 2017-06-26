@@ -1,5 +1,6 @@
 #ifndef __UNIVERSE_DB_UTIL_H_
 #define __UNIVERSE_DB_UTIL_H_
+#include "mysql.h"
 
 enum DB_QUERY_TYPE
 {
@@ -10,7 +11,6 @@ enum DB_QUERY_TYPE
 	DB_QUERY_SELECT,
 };
 
-class MYSQL_RES;
 typedef int (*RESULT_HANDLE)(MYSQL_RES *res);
 
 class UniverseDbUtil
@@ -21,7 +21,8 @@ public:
     int Init();
     int Fini();
 
-	int Query(const char *sql_str, DB_QUERY_TYPE query_type, RESULT_HANDLE *ret_handle=NULL);
+	//int Query(const char *sql_str, DB_QUERY_TYPE query_type, RESULT_HANDLE *ret_handle=NULL);
+	MYSQL* GetMysqlInstance();
 
 	//insert
 	//delete
