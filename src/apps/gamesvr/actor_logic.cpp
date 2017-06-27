@@ -8,6 +8,7 @@
 #include "actor.h"
 #include "gamesvr_msg_processer.h"
 #include "instance_mgr.h"
+#include "db/gamesvr_db.h"
 
 static ActorReqHandle *gs_actor_req_handle = NULL;
 
@@ -28,8 +29,8 @@ ActorReqHandle* ActorReqHandle::GetSingleInstance()
 }
 int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 {
-	ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
-	massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
+	//ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
+	//massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
 
 	printf("actor %llu registe name:%s\n", id, name);
 
@@ -38,8 +39,14 @@ int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 	actor.SetConnId(conn_id);
 	actor.SetName(name);
 	int ret = 0;
-	ret = db_mgr->InsertActorData(&actor);
-	massert_retval(0 == ret, ret);
+	//ret = db_mgr->InsertActorData(&actor);
+	//massert_retval(0 == ret, ret);
+
+	ActorDB db_actor;
+	db_actor.InitFromRuntimeActor(&actor);
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	db_mgr->InsertActor(&db_actor);
+
 
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
@@ -58,23 +65,28 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 		return ERR_ALREADY_EXISTS;
 	}
 
-	ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
-	massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
-	Actor db_actor;
-	int ret = db_mgr->LoadActorData(id, &db_actor);
+	//ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
+	//massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
+
+
+	ActorDB db_actor;
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	int ret = db_mgr->QueryActor(id, &db_actor);
 	if (ret != 0)
 	{
-		printf("load actor:%llu data failed;%d\n", id, ret);
-		return ret;
+		printf("actor %llu not in db\n", id);
+		massert_noeffect(ret == ERR_NOT_FOUND);
+		return ERR_NOT_FOUND;
 	}
-
 	Actor *actor = actor_mgr->AllocActor(id);
 	massert_retval(actor != NULL, ERR_BAD_ALLOC);
+
+	db_actor.ConvertToRuntimeActor(actor);
 
 	actor->SetConnId(conn_id);
 
 	//set data
-	actor->SetName(db_actor.GetName());
+	//actor->SetName(db_actor.GetName()); //init from db
 	actor->SetSpeed(100);  //1m/s
 
 	//³õÊ¼»¯ÊôÐÔ
@@ -105,9 +117,6 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 
 int ActorReqHandle::ActorLogoutReq(u64 conn_id, u64 id)
 {
-	ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
-	massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
-
 	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
 	massert_retval(actor_mgr != NULL, ERR_INVALID_PARAM);
 
@@ -122,7 +131,11 @@ int ActorReqHandle::ActorLogoutReq(u64 conn_id, u64 id)
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorLogoutRsp(conn_id, id, 0);
 
-	db_mgr->UpdateActorData(actor);
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	ActorDB db_actor;
+	db_actor.InitFromRuntimeActor(actor);
+	db_mgr->UpdateActor(&db_actor);
+
 	actor_mgr->FreeActor(id);
 
 	printf("actor %llu logout success\n", id);

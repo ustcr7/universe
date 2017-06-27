@@ -1,3 +1,4 @@
+/*
 #include "../../common/massert.h"
 #include "../../common/errcode.h"
 #include "../../common/base_type.h"
@@ -85,3 +86,4 @@ int ActorDbMgr::UpdateActorData(const Actor *actor)
 
 	return 0;
 }
+*/

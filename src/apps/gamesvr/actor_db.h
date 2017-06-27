@@ -1,5 +1,7 @@
+/*
 #ifndef __H_ACTOR_DB_H__
 #define __H_ACTOR_DB_H__
+
 
 //WCC_TODO: just in memory now,  to be saved in real db
 
@@ -16,3 +18,4 @@ public:
 };
 
 #endif
+*/
