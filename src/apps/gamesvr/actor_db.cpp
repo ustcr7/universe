@@ -49,13 +49,26 @@ int ActorDbMgr::LoadActorData(u64 id, Actor *actor)
 {
 	massert_retval(actor != NULL, ERR_INVALID_PARAM);
 
+	Actor rt_actor;
+	ActorDB db_actor;
+	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
+	int ret = db_mgr->QueryActor(id, &db_actor);
+	if (ret != 0)
+	{
+		printf("actor %llu not in db\n", id);
+		massert_noeffect(ret == ERR_NOT_FOUND);
+		return ERR_NOT_FOUND;
+	}
+	db_actor.ConvertToRuntimeActor(&rt_actor);
+	memory_db.insert(std::make_pair(id, rt_actor));
+	
+
 	std::map<u64, Actor>::iterator iter = memory_db.find(id);
 	if (iter == memory_db.end())
 	{
 		actor = NULL;
 		return ERR_NOT_FOUND;
 	}
-
 	*actor = iter->second;
 
 	return 0;

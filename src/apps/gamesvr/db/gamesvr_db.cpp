@@ -4,6 +4,7 @@
 #include "../../../common/db/db_util.h"
 #include <string.h>
 #include "../actor.h"
+#include <sstream>
 
 
 static GameSvrDbMgr* gs_gamesvr_db_mgr;
@@ -69,6 +70,18 @@ int  ActorDB::InitFromRuntimeActor(const Actor *rt_actor)
 	return 0;
 }
 
+int ActorDB::ConvertToRuntimeActor(Actor *rt_actor)
+{
+	massert_retval(rt_actor != NULL, ERR_INVALID_PARAM);
+
+	rt_actor->SetId(GetActorRid());
+	rt_actor->SetName(GetActorName());
+
+	//WCC_TODO: game blob
+
+	return 0;
+}
+
 GameSvrDbMgr::GameSvrDbMgr()
 {
 
@@ -86,9 +99,115 @@ GameSvrDbMgr* GameSvrDbMgr::GetInstance()
 
 int GameSvrDbMgr::QueryActor(u64 actor_rid, const ActorDB *actor)
 {
-	//select from db;
-	//const char sql_str[] = "select actor_id, name, game_data_size, game_data_blob from actor_db where actor_id = 123123";
-	//massert_retval(actor != NULL, ERR_INVALID_PARAM);
+	MYSQL_STMT    *stmt;
+	MYSQL_BIND    bind[2];
+
+	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
+	stmt = mysql_stmt_init(db_util->GetMysqlInstance());
+	massert_retval(stmt != NULL, ERR_UNKNOWN);
+
+	std::stringstream sstr;
+	sstr << "select actor_id,name from actor_db where actor_id = "<<actor_rid;
+	printf("query sql:%s\n", sstr.str().c_str());
+	if (mysql_stmt_prepare(stmt, sstr.str().c_str(), strlen(sstr.str().c_str())) != 0)
+	{
+		printf("mysql_stmt_prepare(), INSERT failed for:%s\n", mysql_stmt_error(stmt));
+	}
+
+	int param_count = mysql_stmt_param_count(stmt);
+	massert_retval(param_count == 0, -1);
+
+	MYSQL_RES     *prepare_meta_result = mysql_stmt_result_metadata(stmt);
+	if (prepare_meta_result == NULL)
+	{
+		printf("prepare_meta_result failed:%s\n", mysql_stmt_error(stmt));
+		massert_retval(0, -1);
+	}
+
+	int column_count = mysql_num_fields(prepare_meta_result);
+	printf("column count:%d\n", column_count);
+	massert_retval(column_count == 2, ERR_INVALID_PARAM);
+
+	if (mysql_stmt_execute(stmt))
+	{
+		printf("mysql_stmt_execute failed: %s\n", mysql_stmt_error(stmt));
+		massert_retval(0, -1);
+	}
+
+	my_bool       is_null[4];
+	my_bool       error[4];
+	unsigned long length[4];
+
+	u64 resutl_actor_rid;
+	char resutl_actor_name[128];
+
+	//actorid
+	memset(bind, 0, sizeof(bind));
+	bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
+	bind[0].buffer = (char *)&resutl_actor_rid;
+	bind[0].is_null = &is_null[0];
+	bind[0].length = &length[0];
+	bind[0].error = &error[0];
+
+	//name 
+	bind[1].buffer_type = MYSQL_TYPE_STRING;
+	bind[1].buffer = (char*)resutl_actor_name;
+	bind[1].buffer_length = 128;
+	bind[1].is_null = &is_null[1];
+	bind[1].length = &length[1];
+	bind[1].error = &error[1];
+
+	/*
+	//game data blob size
+	int blob_size = actor->GetGameDataBolbSize();
+	bind[2].buffer_type = MYSQL_TYPE_LONG;
+	bind[2].buffer = (char *)&blob_size;
+	bind[2].is_null = 0;
+	bind[2].length = 0;
+
+	//game data blob size
+	bind[3].buffer_type = MYSQL_TYPE_LONG;
+	bind[3].buffer = actor->GetMutableGameDataBlob();  //FUCK 为什么不是const
+	bind[3].is_null = 0;
+	bind[3].length = (unsigned long*)&blob_size;
+	*/
+
+	if (mysql_stmt_bind_result(stmt, bind))
+	{
+		printf(" mysql_stmt_bind_result failed:%s\n", mysql_stmt_error(stmt));
+		massert_retval(0, -1);
+	}
+
+	if (mysql_stmt_store_result(stmt))
+	{
+		printf("mysql_stmt_store_result failed: %s\n", mysql_stmt_error(stmt));
+		massert_retval(0, -1);
+	}
+
+	//fetch
+	int row_count = 0;
+	while (!mysql_stmt_fetch(stmt))
+	{
+		row_count++;
+		fprintf(stdout, "  row %d\n", row_count);
+		massert_continue(!is_null[0]);
+		massert_continue(!is_null[1]);
+		printf("select result: actor_rid:%llu name:%s\n", resutl_actor_rid, resutl_actor_name);
+	}
+
+	//finish
+	mysql_free_result(prepare_meta_result);
+	if (mysql_stmt_close(stmt))
+	{
+		printf("mysql_stmt_close failed: %s\n", mysql_error(db_util->GetMysqlInstance()));
+		massert_retval(0, -1);
+	}
+
+	if (row_count <= 0)
+	{
+		return ERR_NOT_FOUND;
+	}
+
 	return 0;
 }
 
@@ -105,16 +224,6 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 	{
 		printf("mysql_stmt_prepare(), INSERT failed for:%s\n", mysql_stmt_error(stmt));
 	}
-
-	/*MYSQL_RES *prepare_meta_result = mysql_stmt_result_metadata(stmt);
-	if (prepare_meta_result == NULL)
-	{
-		printf(" mysql_stmt_result_metadata fail:%s\n", mysql_stmt_error(stmt));
-		massert_retval(0, -1);
-	}
-
-	int column_count = mysql_num_fields(prepare_meta_result);
-	massert_retval(column_count == 4, ERR_INVALID_PARAM); */
 
 	int param_count = mysql_stmt_param_count(stmt);
 	massert_retval(param_count == 4, -1);
@@ -142,7 +251,7 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 	bind[2].length = 0;
 
 	//game data blob size
-	bind[3].buffer_type = MYSQL_TYPE_LONG;
+	bind[3].buffer_type = MYSQL_TYPE_BLOB;
 	bind[3].buffer = actor->GetMutableGameDataBlob();  //FUCK 为什么不是const
 	bind[3].is_null = 0;
 	bind[3].length = (unsigned long*)&blob_size;
@@ -153,19 +262,11 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 		massert_retval(0, -1);
 	}
 
-	/*if (mysql_stmt_bind_result(stmt, bind) != 0)
-	{
-		printf(" mysql_stmt_bind_result() failed :%s\n", mysql_stmt_error(stmt));
-		massert_retval(0, -1);
-	}*/
-
 	if (mysql_stmt_execute(stmt) != 0)
 	{
 		printf("execute failed: %s\n", mysql_stmt_error(stmt));
 		massert_retval(0, -1);
 	}
-
-	//mysql_free_result(prepare_meta_result);
 
 	if (mysql_stmt_close(stmt))
 	{

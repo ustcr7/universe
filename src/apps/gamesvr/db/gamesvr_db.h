@@ -24,7 +24,8 @@ public:
 	const char *GetGameDataBlob () const ;
 	char *GetMutableGameDataBlob();
 
-	int InitFromRuntimeActor(const Actor *actor);
+	int InitFromRuntimeActor(const Actor *actor);  //actor    -->  db_actor
+	int ConvertToRuntimeActor(Actor *actor);       //db_actor -->  actor
 private:
 	//基础数据单独成列,其他数据放在一个blob里
 	u64 actor_rid;
