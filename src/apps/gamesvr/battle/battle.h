@@ -71,7 +71,7 @@ public:
 		unitState = state;
 		return 0;
 	}
-	UV_UNIT_STATE_TYPE GetUnitState()
+	UV_UNIT_STATE_TYPE GetUnitState() const 
 	{
 		return unitState;
 	}

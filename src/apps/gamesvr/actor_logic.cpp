@@ -43,7 +43,7 @@ int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 	//massert_retval(0 == ret, ret);
 
 	ActorDB db_actor;
-	db_actor.InitFromRuntimeActor(&actor);
+	actor.DumpToDb(&db_actor);
 	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
 	db_mgr->InsertActor(&db_actor);
 
@@ -81,14 +81,12 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	Actor *actor = actor_mgr->AllocActor(id);
 	massert_retval(actor != NULL, ERR_BAD_ALLOC);
 
-	db_actor.ConvertToRuntimeActor(actor);
+	actor->InitFromDb(&db_actor);
 
 	actor->SetConnId(conn_id);
 
-	//set data
-	//actor->SetName(db_actor.GetName()); //init from db
-	actor->SetSpeed(100);  //1m/s
-
+	//从db里读取
+	/*
 	//初始化属性
 	UnitAttr* attr = actor->GetMutableUnitAttr();
 	attr->SetAttr(ACTOR_ATTR_HP, 10000); //默认10000血
@@ -98,6 +96,7 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	//初始化状态
 	UnitState* state = actor->GetMutableUnitState();
 	state->SetUnitState(UV_UNIT_STATE_ALIVE);
+	*/
 
 	//enter instance
 	EnterInstanceParam enter_param;
@@ -133,7 +132,7 @@ int ActorReqHandle::ActorLogoutReq(u64 conn_id, u64 id)
 
 	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
 	ActorDB db_actor;
-	db_actor.InitFromRuntimeActor(actor);
+	actor->DumpToDb(&db_actor);
 	db_mgr->UpdateActor(&db_actor);
 
 	actor_mgr->FreeActor(id);

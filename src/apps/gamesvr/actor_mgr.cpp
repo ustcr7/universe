@@ -85,7 +85,8 @@ int ActorMgr::SaveAllActors()
 	for (std::map<u64, Actor*>::iterator iter = actorMap.begin(); iter != actorMap.end(); ++iter)
 	{
 		ActorDB db_actor;
-		db_actor.InitFromRuntimeActor(iter->second);
+		Actor *rt_actor = iter->second;
+		rt_actor->DumpToDb(&db_actor);
 
 		db_mgr->UpdateActor(&db_actor);
 	}

@@ -5,7 +5,7 @@
 #include "gamesvr_def.h"
 #include "uv_unit.h"
 static const int MAX_MOVE_PATH_COUNT = 30;
-
+class ActorDB;
 struct Pos;
 struct MovePath
 {
@@ -34,6 +34,9 @@ public:
 		move_path = *path;
 		return 0;
 	}
+
+	int DumpToDb(ActorDB *db_actor) const;
+	int InitFromDb(const ActorDB *actor);
 private:
 	//基础数据  //WCC_TODO:把id,name也移到unit中
 	u64 _connId;

@@ -6,15 +6,31 @@ message DbPos
 	optional int32 pos_y = 2;
 }
 
+message DbUnitSpellInfo
+{
+    optional int32  spell_id       = 1;
+	optional uint32 last_cast_time = 2;
+}
+
+message DbUnitSpellBook
+{
+    repeated DbUnitSpellInfo spellInfos = 1;
+}
+
+message DbUnitState
+{
+    optional int32 state = 1;
+}
+
 message DbActorGameData
 {
     optional int32 speed = 1;
 	optional DbPos pos   = 2;
-	repeated uint64 attr = 3;
+	repeated uint64 attrs = 3;
 	optional uint64 instance_id = 4;
 
-	//WCC_TODO: UnitSpellBook spellBook;
-	//WCC_TODO: UnitState unitState;
+	optional DbUnitSpellBook spellBook   = 5;
+	optional DbUnitState unitState       = 6;
 }
 
 	

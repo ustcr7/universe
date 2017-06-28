@@ -2,6 +2,7 @@
 #include "../../../common/massert.h"
 #include "../../../common/errcode.h"
 #include "../../../common/db/db_util.h"
+#include "universe_db.pb.h"
 #include <string.h>
 #include "../actor.h"
 #include <sstream>
@@ -38,11 +39,10 @@ char * ActorDB::GetMutableActorName()
 	return name;
 }
 
-int ActorDB::SetGameDataBlob(const char *blob_data, int blob_size)
+int ActorDB::SetGameDataBlobSize(int blob_size)
 {
 	massert_retval(blob_size < MAX_ACTOR_GAME_DATA_BLOB_SIZE, ERR_INVALID_PARAM);
 	game_data_size = blob_size;
-	memcpy(game_data, blob_data, blob_size);
 	return 0;
 }
 int ActorDB::GetGameDataBolbSize() const
@@ -59,28 +59,6 @@ char *  ActorDB::GetMutableGameDataBlob()
 	return game_data;
 }
 
-int  ActorDB::InitFromRuntimeActor(const Actor *rt_actor)
-{
-	SetActorRid(rt_actor->GetId());
-	SetActorName(rt_actor->GetName());
-	
-	//save blob
-	//SetGameDataBlob()
-
-	return 0;
-}
-
-int ActorDB::ConvertToRuntimeActor(Actor *rt_actor)
-{
-	massert_retval(rt_actor != NULL, ERR_INVALID_PARAM);
-
-	rt_actor->SetId(GetActorRid());
-	rt_actor->SetName(GetActorName());
-
-	//WCC_TODO: game blob
-
-	return 0;
-}
 
 GameSvrDbMgr::GameSvrDbMgr()
 {

@@ -19,13 +19,11 @@ public:
 	int SetActorName(const char *param_name);
 	const char* GetActorName() const;
 	char * GetMutableActorName();
-	int SetGameDataBlob(const char *blob_data, int blob_size);
+	int SetGameDataBlobSize(int blob_size);
 	int GetGameDataBolbSize () const ;
 	const char *GetGameDataBlob () const ;
 	char *GetMutableGameDataBlob();
 
-	int InitFromRuntimeActor(const Actor *actor);  //actor    -->  db_actor
-	int ConvertToRuntimeActor(Actor *actor);       //db_actor -->  actor
 private:
 	//基础数据单独成列,其他数据放在一个blob里
 	u64 actor_rid;
