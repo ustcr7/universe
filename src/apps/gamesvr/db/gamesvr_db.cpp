@@ -190,11 +190,16 @@ int GameSvrDbMgr::QueryActor(u64 actor_rid, const ActorDB *actor)
 }
 
 int GameSvrDbMgr::InsertActor(ActorDB *actor)
-{
+{	
+	massert_retval(actor != NULL, ERR_INVALID_PARAM);
+
+	printf("insert db actor %llu\n", actor->GetActorRid());
+
 	MYSQL_STMT    *stmt;
 	MYSQL_BIND    bind[4];
 
 	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
+	massert_retval(db_util != NULL, ERR_INVALID_PARAM);
 	stmt = mysql_stmt_init(db_util->GetMysqlInstance());
 	massert_retval(stmt != NULL, ERR_UNKNOWN);
 	const char sql_str[] = "INSERT INTO actor_db(actor_id, name, game_data_size, game_data_blob) VALUES(?,?,?,?)";
@@ -240,7 +245,7 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 		massert_retval(0, -1);
 	}
 
-	if (mysql_stmt_execute(stmt) != 0)
+	if (mysql_stmt_execute(stmt) != 0)  //WCC_TODO CORE DUMP
 	{
 		printf("execute failed: %s\n", mysql_stmt_error(stmt));
 		massert_retval(0, -1);

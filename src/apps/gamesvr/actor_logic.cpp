@@ -29,9 +29,7 @@ ActorReqHandle* ActorReqHandle::GetSingleInstance()
 }
 int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 {
-	//ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
-	//massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
-
+	massert_retval(name != NULL, ERR_INVALID_PARAM);
 	printf("actor %llu registe name:%s\n", id, name);
 
 	Actor actor;

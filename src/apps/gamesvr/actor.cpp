@@ -50,6 +50,7 @@ int Actor::SetCurPathIndex(int index)
 
 int Actor::DumpToDb(ActorDB *db_actor) const
 {
+	printf("rt actor %llu dump to dp\n", GetId());
 	massert_retval(db_actor != NULL, ERR_INVALID_PARAM);
 	db_actor->SetActorRid(GetId());
 	db_actor->SetActorName(GetName());
@@ -74,6 +75,8 @@ int Actor::DumpToDb(ActorDB *db_actor) const
 	int data_size = db_game_data.ByteSizeLong();
 	db_game_data.SerializeToArray(db_actor->GetMutableGameDataBlob(), data_size);
 	db_actor->SetGameDataBlobSize(data_size);
+
+	printf("dump success\n");
 
 	return 0;
 }
