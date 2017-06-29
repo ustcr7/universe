@@ -4,7 +4,7 @@
 //WCC_TODO: 接口均为阻塞操作,  后续改为异步操作
 
 static const int MAX_ACTOR_NAME_SIZE = 128;
-static const int MAX_ACTOR_GAME_DATA_BLOB_SIZE = 65535;
+static const int MAX_ACTOR_GAME_DATA_BLOB_SIZE = 1024;
 class Actor;
 //
 //actor_db:

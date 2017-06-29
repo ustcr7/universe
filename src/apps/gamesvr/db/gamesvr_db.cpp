@@ -195,8 +195,10 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 
 	printf("insert db actor %llu\n", actor->GetActorRid());
 
+	int BIND_PARAM_COUNT = 4;
+
 	MYSQL_STMT    *stmt;
-	MYSQL_BIND    bind[4];
+	MYSQL_BIND    bind[BIND_PARAM_COUNT];
 
 	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
 	massert_retval(db_util != NULL, ERR_INVALID_PARAM);
@@ -209,7 +211,7 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 	}
 
 	int param_count = mysql_stmt_param_count(stmt);
-	massert_retval(param_count == 4, -1);
+	massert_retval(param_count == BIND_PARAM_COUNT, -1);
 	//actorid
 	u64 actor_rid = actor->GetActorRid();
 	memset(bind, 0, sizeof(bind));
@@ -227,24 +229,27 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 	bind[1].length = &name_len;
 
 	//game data blob size
-	int blob_size = actor->GetGameDataBolbSize();
+	unsigned long blob_size = (unsigned long)actor->GetGameDataBolbSize();
 	bind[2].buffer_type = MYSQL_TYPE_LONG;
 	bind[2].buffer = (char *)&blob_size;
 	bind[2].is_null = 0;
 	bind[2].length = 0;
+	printf("game data blob size:%d \n", (int)blob_size);
 
+	
 	//game data blob size
 	bind[3].buffer_type = MYSQL_TYPE_BLOB;
 	bind[3].buffer = actor->GetMutableGameDataBlob();  //FUCK 为什么不是const
 	bind[3].is_null = 0;
 	bind[3].length = (unsigned long*)&blob_size;
-
+	
 	if (mysql_stmt_bind_param(stmt, bind))
 	{
 		printf(" bind failed: %s\n", mysql_stmt_error(stmt));
 		massert_retval(0, -1);
 	}
 
+	printf("begin exexute sql\n");
 	if (mysql_stmt_execute(stmt) != 0)  //WCC_TODO CORE DUMP
 	{
 		printf("execute failed: %s\n", mysql_stmt_error(stmt));
