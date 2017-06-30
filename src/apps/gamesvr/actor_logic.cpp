@@ -66,7 +66,6 @@ int ActorReqHandle::ActorLoginReq(u64 conn_id, u64 id)
 	//ActorDbMgr *db_mgr = ActorDbMgr::GetSingleInstance();
 	//massert_retval(db_mgr != NULL, ERR_INVALID_PARAM);
 
-
 	ActorDB db_actor;
 	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
 	int ret = db_mgr->QueryActor(id, &db_actor);

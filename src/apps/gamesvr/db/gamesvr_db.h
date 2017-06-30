@@ -38,7 +38,7 @@ class GameSvrDbMgr
 public:
 	GameSvrDbMgr();
 	static GameSvrDbMgr* GetInstance();
-	int QueryActor(u64 actor_rid, const ActorDB *actor);
+	int QueryActor(u64 actor_rid, ActorDB *actor);
 	int InsertActor(ActorDB *actor);
 	int UpdateActor(ActorDB *actor);
 	int DeleteActor(u64 actor_rid);

@@ -50,6 +50,10 @@ public:
 	}
 	UnitSpellInfo* GetUnitSpellInfoById(int spl_id);
 	int AddUnitSpellInfo(const UnitSpellInfo* spellInfo);
+	int GetSpellCount() const
+	{
+		return spell_cnt;
+	}
 private:
 	int spell_cnt;
 	UnitSpellInfo unit_spells[MAX_UNIT_SPELL_COUNT];

@@ -119,5 +119,12 @@ int Actor::InitFromDb(const ActorDB *db_actor)
 
 	GetMutableUnitState()->SetUnitState((UV_UNIT_STATE_TYPE)db_game_data.unitstate().state());
 
+	printf("init from db success, id:%llu name:%s, pos:<%d-%d>\n", GetId(), GetName(), GetPos()->GetX(), GetPos()->GetY());
+	for (int i = 0; i < db_game_data.attrs_size(); ++i)
+	{
+		printf("attr %d, value:%d\n", i, (int)GetUnitAttr()->GetAttr((ACTOR_ATTR_TYPE)i));
+	}
+	printf("spell count:%d\n", GetSpellBook()->GetSpellCount());
+
 	return 0;
 }

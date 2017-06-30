@@ -9,6 +9,11 @@ Unit::Unit()
 	memset(_name, 0, sizeof(_name));
 	_id = 0;
 	instance_id = 0;
+
+	Pos init_pos;
+	init_pos.SetX(100);
+	init_pos.SetY(100);
+	SetPos(&init_pos);
 }
 
 int Unit::SetName(const char *name)
