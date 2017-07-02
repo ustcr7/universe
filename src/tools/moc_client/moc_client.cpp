@@ -22,6 +22,105 @@
 #include <stddef.h>
 #include <cstddef>
 #include "universe_cs.pb.h"
+#include "command_mgr.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+
+
+int my_actor_rid = atoi(argv[2]);
+char my_name[100];
+
+static char g_tmp_Str[1024];
+
+
+static char *line_read = (char *)NULL;
+
+void cb_linehandler(char *line)
+{
+
+	massert_retval(line != NULL, ERR_INVALID_PARAM);
+
+	//char *line_no_white = strip_white(line); //WCC_TODO去空格
+
+	static std::string last_cmd;
+	std::string cur_cmd = line;
+
+	do
+	{
+		if (cur_cmd.length() <= 0)
+		{
+			continue;
+		}
+		int ret = 0;
+		//命令字符串解析
+		ResultStr result[10];
+		int result_cnt = sizeof(result) / sizeof(result[0]);
+		int ret = SplitStr(line, " ", result, &result_cnt);
+		massert_retval(ret == 0, ret);
+
+		ClientReqHandle(result);
+
+	} while (0);
+	if (cur_cmd.compare(last_cmd) != 0)
+	{
+		add_history(line_no_white);
+		last_cmd = cur_cmd;
+	}
+
+	if (signal(SIGINT, client_stop) == SIG_ERR) {
+		printf("signal SIGINT error!\n");
+		return;
+	}
+}
+
+const char * command_generator(const char *text, int state)
+{
+	static int list_index, len;
+
+	if (!state)
+	{
+		list_index = 0;
+		len = strlen(text);
+	}
+
+	/* Return the next name which partially matches from the command list. */
+	int cmd_num = g_commands.size();
+	while (list_index < cmd_num)
+	{
+		const CommandInfo *cmd = CommandMgr::GetInstance()->GetFirstMatchCommand(text, len);
+		if (cmd != NULL)
+		{
+			return cmd->GetCommandStr();
+		}
+		list_index++;
+	}
+	return ((char *)NULL);
+}
+
+char ** moc_client_completion(const char *text, int start, int end)
+{
+	char **matches;
+
+	matches = (char **)NULL;
+
+	if (start == 0)
+		matches = rl_completion_matches(text, command_generator);
+
+	return (matches);
+}
+
+
+void initialize_readline()
+{
+	stifle_history(100);
+	read_history("simu_history");
+	using_history( );
+	rl_callback_handler_install("cmd>>", linehandler);
+
+	rl_attempted_completion_function = moc_client_completion;
+
+	return;
+}
 
 int main(int argc, char **argv)
 {	if (argc < 3)
@@ -30,8 +129,6 @@ int main(int argc, char **argv)
 		return - 1;
 	}
 
-	int my_actor_rid = atoi(argv[2]);
-	char my_name[100];
 	strncpy(my_name, argv[1], sizeof(my_name));
 	printf("moc client start name:%s rid:%d\n", my_name, my_actor_rid);
 
@@ -43,177 +140,21 @@ int main(int argc, char **argv)
 
     while(true)
    	{
+	    //client req
       	printf("please input command\n");
    	    char cmd[1024];		
 		std::cin.getline(cmd, 1024);
 
-		ResultStr result[10];
-		int result_cnt = sizeof(result) / sizeof(result[0]);
-		int ret = SplitStr(cmd, " ", result, &result_cnt);
-		massert_retval(ret == 0, ret);
-
-		//std::string cmdStr(cmd);
 		
-		if(strcmp(result[0].str,"send_reg_msg") == 0)
-		{
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ);
-			msg.mutable_msgbody()->mutable_registereq()->set_id(my_actor_rid);
-			msg.mutable_msgbody()->mutable_registereq()->set_name(my_name);
-		    tcpClient->sendMsg(&msg);
-	    }
-		if (strcmp(result[0].str, "send_login_msg") == 0)
-		{
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGIN_REQ);
-			msg.mutable_msgbody()->mutable_loginreq()->set_id(my_actor_rid);
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_logout_msg") == 0)
-		{
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_LOGOUT_REQ);
-			msg.mutable_msgbody()->mutable_logoutreq()->set_id(my_actor_rid);
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_learnspell_msg") == 0)
-		{
-			if (result_cnt<2)
-			{
-				printf("Usage: send_learnspell_msg spellid\n");
-				break;
-			}
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_actorid(my_actor_rid);
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_LEARN_SPELL_REQ);
-			LearnSpellReq *req = msg.mutable_msgbody()->mutable_learnspellreq();
-			req->set_spellid(atoi(result[1].str));
-			
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_castspell_msg") == 0)
-		{
-			if (result_cnt<3)
-			{
-				printf("Usage: send_castspell_msg spellid targetid\n");
-				break;
-			}
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_actorid(my_actor_rid);
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_CAST_SPELL_REQ);
-			CastSpellReq *req = msg.mutable_msgbody()->mutable_castspellreq();
-			req->set_spellid(atoi(result[1].str));
-			req->set_targetid(atoll(result[2].str));
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_getdata_msg") == 0)
-		{
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_REQ);
-			msg.mutable_msgbody()->mutable_getfulldatareq()->set_id(my_actor_rid);
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_chat_msg") == 0)
-		{
-			int target_rid = atoi(result[1].str);
-			char *content = result[2].str;
 
-			UniverseMsg msg;
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_CHAT_REQ);
-			ChatInfo *chat_info = msg.mutable_msgbody()->mutable_chatreq()->mutable_chatinfo();
-			chat_info->set_type(CHAT_TYPE_PRIVATE);
-			chat_info->set_content(content);
-			chat_info->set_dstid(target_rid);
-			tcpClient->sendMsg(&msg);
-		}
-		if (strcmp(result[0].str, "send_move_msg") == 0)
+		//server msg rsp
+		if (strcmp(result[0].str, "recv_msg") == 0)
 		{
 			UniverseMsg msg;
-			msg.mutable_msghead()->set_actorid(my_actor_rid);
-			msg.mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_MOVE_REQ);
-			ActorMoveReq *move_req = msg.mutable_msgbody()->mutable_movereq();
-
-			if (false)   //折线走
+			ret = tcpClient->recvMsg(&msg);
+			if (ret != 0)
 			{
-				//(50,150) --> (200,100) --> (320,160) --> (0,0)
-				PathNode *node = move_req->add_paths();
-				node->set_pos_x(50);
-				node->set_pos_y(150);
-				node = move_req->add_paths();
-				node->set_pos_x(200);
-				node->set_pos_y(100);
-				node = move_req->add_paths();
-				node->set_pos_x(320);
-				node->set_pos_y(160);
-				node = move_req->add_paths();
-				node->set_pos_x(0);
-				node->set_pos_y(0);
-			}
-			if (false)   //往回走
-			{
-				//(300,0) --> (330,0) --> (330,100) --> (150,100)
-				PathNode *node = move_req->add_paths();
-				node->set_pos_x(300);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(330);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(330);
-				node->set_pos_y(100);
-				node = move_req->add_paths();
-				node->set_pos_x(150);
-				node->set_pos_y(100);
-			}
-
-			//斜线行走
-			if(false)
-			{
-				PathNode *node = move_req->add_paths();		    
-				node->set_pos_x(100);
-				node->set_pos_y(100);
-
-				node = move_req->add_paths();
-				node->set_pos_x(200);
-				node->set_pos_y(600);
-			}
-			//直线行走 OK
-			if(false)
-			{
-				PathNode *node = move_req->add_paths();
-				node->set_pos_x(300);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(340);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(500);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(530);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(1000);
-				node->set_pos_y(0);
-				node = move_req->add_paths();
-				node->set_pos_x(1000);
-				node->set_pos_y(30);
-				node = move_req->add_paths();
-				node->set_pos_x(1000);
-				node->set_pos_y(100);
-				node = move_req->add_paths();
-				node->set_pos_x(1000);
-				node->set_pos_y(300);
-			}
-			tcpClient->sendMsg(&msg);
-		}
-		if(strcmp(result[0].str, "recv_msg") == 0)
-		{
-		    UniverseMsg msg;
-		    ret = tcpClient->recvMsg(&msg);
-			if(ret != 0)
-			{
-			    //printf("recv failed for %d\n", ret);
+				//printf("recv failed for %d\n", ret);
 				continue;
 			}
 			switch (msg.msghead().msgid())
@@ -251,9 +192,9 @@ int main(int argc, char **argv)
 				printf("recv forward char msg\n");
 				const ChatInfo &chatinfo = msg.msgbody().forwardchatinfo().chatinfo();
 				printf("actor:%d chat to you:%s\n", (int)chatinfo.dstid(), chatinfo.content().c_str());
-		        break;
+				break;
 			}
-			default :
+			default:
 			{
 				printf("invalid recv msgid:%d\n", msg.msghead().msgid());
 				break;
@@ -261,14 +202,14 @@ int main(int argc, char **argv)
 			}
 			printf("recv server msg id:%d\n", msg.msghead().msgid());
 		}
-		if(strcmp(result[0].str, "stop")==0)
+		if (strcmp(result[0].str, "stop") == 0)
 		{
-		    tcpClient->close();
+			tcpClient->close();
 			break;
 		}
 		else
 		{
-		    printf("ivnalid cmd:%s\n", cmd);
+			printf("ivnalid cmd:%s\n", cmd);
 		}
    	}
 
