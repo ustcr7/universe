@@ -29,7 +29,7 @@ private:
 class CommandMgr
 {
 public:
-	CommandMgr* GetInstance();
+	static CommandMgr* GetInstance();
 	int AddCommand(const char *command_str);
 	const CommandInfo* GetCommand(const char *command_str) const;
 	const CommandInfo* GetFirstMatchCommand(const char *command_str, int len) const;

@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <errno.h>  
 #include <sys/types.h>  
+#include <sys/epoll.h>
 #include <sys/socket.h>  
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -26,18 +27,29 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+static int g_epollfd = 0;
+static struct epoll_event events[EPOLLEVENTS];
 
 int my_actor_rid = atoi(argv[2]);
 char my_name[100];
+TcpClient *tcpClient = NULL;
 
 static char g_tmp_Str[1024];
 
 
 static char *line_read = (char *)NULL;
 
+void add_event(int epollfd, int fd, int state)
+{
+	struct epoll_event ev;
+	ev.events = state;
+	ev.data.fd = fd;
+	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+}
+
+
 void cb_linehandler(char *line)
 {
-
 	massert_retval(line != NULL, ERR_INVALID_PARAM);
 
 	//char *line_no_white = strip_white(line); //WCC_TODO去空格
@@ -58,7 +70,7 @@ void cb_linehandler(char *line)
 		int ret = SplitStr(line, " ", result, &result_cnt);
 		massert_retval(ret == 0, ret);
 
-		ClientReqHandle(result);
+		ClientReqHandle(result, result_cnt);
 
 	} while (0);
 	if (cur_cmd.compare(last_cmd) != 0)
@@ -83,16 +95,10 @@ const char * command_generator(const char *text, int state)
 		len = strlen(text);
 	}
 
-	/* Return the next name which partially matches from the command list. */
-	int cmd_num = g_commands.size();
-	while (list_index < cmd_num)
+	const CommandInfo *cmd = CommandMgr::GetInstance()->GetFirstMatchCommand(text, len);
+	if (cmd != NULL)
 	{
-		const CommandInfo *cmd = CommandMgr::GetInstance()->GetFirstMatchCommand(text, len);
-		if (cmd != NULL)
-		{
-			return cmd->GetCommandStr();
-		}
-		list_index++;
+		return cmd->GetCommandStr();
 	}
 	return ((char *)NULL);
 }
@@ -108,7 +114,6 @@ char ** moc_client_completion(const char *text, int start, int end)
 
 	return (matches);
 }
-
 
 void initialize_readline()
 {
@@ -132,86 +137,32 @@ int main(int argc, char **argv)
 	strncpy(my_name, argv[1], sizeof(my_name));
 	printf("moc client start name:%s rid:%d\n", my_name, my_actor_rid);
 
+	const int fd = fileno(stdin);
+	g_epollfd = epoll_create(10);
+	add_event(g_epollfd, fd, EPOLLIN);
+
     int ret = 0;
 
-    TcpClient *tcpClient = TcpClient::GetInstance();
+    tcpClient = TcpClient::GetInstance();
 	ret = tcpClient->connect("10.154.142.48", 6789);
 	massert_retval(ret == 0, ret);
 
-    while(true)
-   	{
-	    //client req
-      	printf("please input command\n");
-   	    char cmd[1024];		
-		std::cin.getline(cmd, 1024);
 
-		
+	for (;;) {
+		usleep(100);
 
-		//server msg rsp
-		if (strcmp(result[0].str, "recv_msg") == 0)
+		int ret = 0;
+
+		int event_num = epoll_wait(g_epollfd, events, EPOLLEVENTS, 0); //控制台输入 epoll监听
+		if (event_num > 0)
 		{
-			UniverseMsg msg;
-			ret = tcpClient->recvMsg(&msg);
-			if (ret != 0)
-			{
-				//printf("recv failed for %d\n", ret);
-				continue;
-			}
-			switch (msg.msghead().msgid())
-			{
-			case UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
-			{
-				printf("recv registe rsp ret:%d\n", msg.msgbody().registersp().result());
-				break;
-			}
-			case UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:
-			{
-				printf("recv login rsp ret:%d\n", msg.msgbody().loginrsp().result());
-				break;
-			}
-			case UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP:
-			{
-				printf("recv log out rsp\n");
-				break;
-			}
-			case UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP:
-			{
-				printf("recv get full data rsp, id:%llu, pos_x:%d, pos_y:%d\n"
-					, (u64)msg.msgbody().getfulldatarsp().id()
-					, msg.msgbody().getfulldatarsp().pos().x()
-					, msg.msgbody().getfulldatarsp().pos().y());
-				break;
-			}
-			case UNIVERSE_MSG_ID_ACTOR_MOVE_RSP:
-			{
-				printf("recv move resp\n");
-				break;
-			}
-			case UNIVERSE_MSG_ID_FORWRARD_CHAT:
-			{
-				printf("recv forward char msg\n");
-				const ChatInfo &chatinfo = msg.msgbody().forwardchatinfo().chatinfo();
-				printf("actor:%d chat to you:%s\n", (int)chatinfo.dstid(), chatinfo.content().c_str());
-				break;
-			}
-			default:
-			{
-				printf("invalid recv msgid:%d\n", msg.msghead().msgid());
-				break;
-			}
-			}
-			printf("recv server msg id:%d\n", msg.msghead().msgid());
+			rl_callback_read_char();
 		}
-		if (strcmp(result[0].str, "stop") == 0)
-		{
-			tcpClient->close();
-			break;
-		}
-		else
-		{
-			printf("ivnalid cmd:%s\n", cmd);
-		}
-   	}
+
+		RecvServerMsg();       //网络数据不断地recv  //WCC_TODO:连续recv N次无数据后应该sleep一小段时间
+
+	}// end for
+
 
 	return 0;
 }

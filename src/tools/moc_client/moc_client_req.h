@@ -4,6 +4,8 @@
 class ResultStr;
 
 //WCC_TODO: ¸Ä³ÉC++Ð´·¨
-int ClientReqHandle(ResultStr *param)
+int ClientReqHandle(ResultStr *param, int result_cnt);
+
+int RecvServerMsg();
 
 #endif

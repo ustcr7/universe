@@ -21,11 +21,12 @@
 #include <iostream>
 #include <stddef.h>
 #include <cstddef>
-
+#include "universe_cs.pb.h"
 extern int my_actor_rid;
 extern char my_name[100];
+extern TcpClient *tcpClient;
 
-int ClientReqHandle(ResultStr *param)
+int ClientReqHandle(ResultStr *result, int result_cnt)
 {
 	if (strcmp(result[0].str, "send_reg_msg") == 0)
 	{
@@ -180,5 +181,62 @@ int ClientReqHandle(ResultStr *param)
 		}
 		tcpClient->sendMsg(&msg);
 	}
-	
+	return 0;
+}
+
+
+int RecvServerMsg()
+{
+	UniverseMsg msg;
+	int ret = tcpClient->recvMsg(&msg);
+	if (ret != 0)
+	{
+		//printf("recv failed for %d\n", ret);
+		return -1;
+	}
+	switch (msg.msghead().msgid())
+	{
+	case UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
+	{
+		printf("recv registe rsp ret:%d\n", msg.msgbody().registersp().result());
+		break;
+	}
+	case UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:
+	{
+		printf("recv login rsp ret:%d\n", msg.msgbody().loginrsp().result());
+		break;
+	}
+	case UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP:
+	{
+		printf("recv log out rsp\n");
+		break;
+	}
+	case UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP:
+	{
+		printf("recv get full data rsp, id:%llu, pos_x:%d, pos_y:%d\n"
+			, (u64)msg.msgbody().getfulldatarsp().id()
+			, msg.msgbody().getfulldatarsp().pos().x()
+			, msg.msgbody().getfulldatarsp().pos().y());
+		break;
+	}
+	case UNIVERSE_MSG_ID_ACTOR_MOVE_RSP:
+	{
+		printf("recv move resp\n");
+		break;
+	}
+	case UNIVERSE_MSG_ID_FORWRARD_CHAT:
+	{
+		printf("recv forward char msg\n");
+		const ChatInfo &chatinfo = msg.msgbody().forwardchatinfo().chatinfo();
+		printf("actor:%d chat to you:%s\n", (int)chatinfo.dstid(), chatinfo.content().c_str());
+		break;
+	}
+	default:
+	{
+		printf("invalid recv msgid:%d\n", msg.msghead().msgid());
+		break;
+	}
+	}
+	printf("recv server msg id:%d\n", msg.msghead().msgid());
+	return 0;
 }
