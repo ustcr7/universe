@@ -3,7 +3,6 @@
 #include "../../common/errcode.h"
 #include "move/move.h"
 #include "actor_logic.h"
-#include "actor_db.h"
 #include "actor_mgr.h"
 #include "actor.h"
 #include "gamesvr_msg_processer.h"

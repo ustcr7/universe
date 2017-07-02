@@ -138,17 +138,21 @@ int GameSvrDbMgr::QueryActor(u64 actor_rid, ActorDB *actor)
 	bind[1].error = &error[1];
 
 	//game data blob size
-	unsigned long blob_size = (unsigned long)actor->GetGameDataBolbSize();
+	int blob_size = (int)actor->GetGameDataBolbSize();
 	bind[2].buffer_type = MYSQL_TYPE_LONG;
 	bind[2].buffer = (char *)&blob_size;
-	bind[2].is_null = 0;
-	bind[2].length = 0;
+	bind[2].is_null = &is_null[2];
+	bind[2].length = &length[2];
+	bind[2].error = &error[2];
 
 	//game data blob size
-	bind[3].buffer_type = MYSQL_TYPE_LONG;
-	bind[3].buffer = actor->GetMutableGameDataBlob();  //FUCK 为什么不是const
-	bind[3].is_null = 0;
-	bind[3].length = (unsigned long*)&blob_size;
+	
+	bind[3].buffer_type = MYSQL_TYPE_BLOB;
+	bind[3].buffer = (char *)actor->GetMutableGameDataBlob();
+	bind[3].is_null = &is_null[3];
+	bind[3].buffer_length = MAX_ACTOR_GAME_DATA_BLOB_SIZE;
+	bind[3].length = &length[3];
+	bind[3].error = &error[3];
 
 	if (mysql_stmt_bind_result(stmt, bind))
 	{
@@ -168,10 +172,13 @@ int GameSvrDbMgr::QueryActor(u64 actor_rid, ActorDB *actor)
 	{
 		row_count++;
 		fprintf(stdout, "  row %d\n", row_count);
-		massert_continue(!is_null[0]);
-		massert_continue(!is_null[1]);
-		massert_continue(!is_null[2]);
-		massert_continue(!is_null[3]);
+		massert_break(!is_null[0]);
+		massert_break(!is_null[1]);
+		massert_break(!is_null[2]);
+		massert_break(!is_null[3]);
+
+		massert_break(length[3] == (unsigned long)blob_size);
+
 		printf("select result: actor_rid:%llu name:%s\n", resutl_actor_rid, resutl_actor_name);
 
 		actor->SetActorRid(resutl_actor_rid);
@@ -192,6 +199,7 @@ int GameSvrDbMgr::QueryActor(u64 actor_rid, ActorDB *actor)
 
 	if (row_count <= 0)
 	{
+		printf("not found actor %llu in db\n", actor_rid);
 		return ERR_NOT_FOUND;
 	}
 

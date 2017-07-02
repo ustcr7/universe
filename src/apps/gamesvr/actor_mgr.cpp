@@ -5,6 +5,7 @@
 #include "actor.h"
 #include "db/gamesvr_db.h"
 
+static const int SAVE_ACTOR_INTERVAL = 20 * 1000;
 
 static ActorMgr* gs_actor_mgr = NULL;
 
@@ -12,7 +13,7 @@ ActorMgr::ActorMgr()
 {
 	UvTimer *timer = UvTimer::GetSingleInstance();
 	u64 dummy = 0;
-	timer->AddTimer(10, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
+	timer->AddTimer(SAVE_ACTOR_INTERVAL, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
 }
 
 ActorMgr* ActorMgr::GetSingleInstance()
@@ -98,6 +99,6 @@ int SaveActorTimeout(const char *callback_data, u32 callback_data_len)
 	ActorMgr::GetSingleInstance()->SaveAllActors();
 	UvTimer *timer = UvTimer::GetSingleInstance();
 	u64 dummy = 0;
-	timer->AddTimer(10, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
+	timer->AddTimer(SAVE_ACTOR_INTERVAL, SaveActorTimeout, (const char*)&dummy, sizeof(dummy));
 	return 0;
 }
