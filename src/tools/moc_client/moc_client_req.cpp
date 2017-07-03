@@ -55,7 +55,7 @@ int ClientReqHandle(ResultStr *result, int result_cnt)
 		if (result_cnt<2)
 		{
 			printf("Usage: send_learnspell_msg spellid\n");
-			break;
+			return -1;
 		}
 		UniverseMsg msg;
 		msg.mutable_msghead()->set_actorid(my_actor_rid);
@@ -70,7 +70,7 @@ int ClientReqHandle(ResultStr *result, int result_cnt)
 		if (result_cnt<3)
 		{
 			printf("Usage: send_castspell_msg spellid targetid\n");
-			break;
+			return -1;
 		}
 		UniverseMsg msg;
 		msg.mutable_msghead()->set_actorid(my_actor_rid);

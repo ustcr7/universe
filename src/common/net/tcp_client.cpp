@@ -103,10 +103,10 @@ int TcpClient::recvMsg(UniverseMsg *msg){
 
 	int read_len = read(clientFd, data, data_len);
 	
-	printf("read_len %d\n", read_len);
+	//printf("read_len %d\n", read_len);
 	if(read_len < 0)
 	{
-		printf("recv msg failed ,err:%s\n", strerror(errno));
+		//printf("recv msg failed ,err:%s\n", strerror(errno));
 		return ERR_NO_DATA;
 	}
 	if(0 == read_len)

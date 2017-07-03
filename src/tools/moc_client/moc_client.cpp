@@ -24,20 +24,31 @@
 #include <cstddef>
 #include "universe_cs.pb.h"
 #include "command_mgr.h"
+#include "moc_client_req.h"
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <iostream>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
 
 static int g_epollfd = 0;
+static const int EPOLLEVENTS = 10;
 static struct epoll_event events[EPOLLEVENTS];
 
-int my_actor_rid = atoi(argv[2]);
+int my_actor_rid;
 char my_name[100];
 TcpClient *tcpClient = NULL;
 
-static char g_tmp_Str[1024];
+//static char g_tmp_Str[1024];
 
 
-static char *line_read = (char *)NULL;
+//static char *line_read = (char *)NULL;
 
 void add_event(int epollfd, int fd, int state)
 {
@@ -50,7 +61,7 @@ void add_event(int epollfd, int fd, int state)
 
 void cb_linehandler(char *line)
 {
-	massert_retval(line != NULL, ERR_INVALID_PARAM);
+	massert_retnone(line != NULL);
 
 	//char *line_no_white = strip_white(line); //WCC_TODOÈ¥¿Õ¸ñ
 
@@ -63,42 +74,41 @@ void cb_linehandler(char *line)
 		{
 			continue;
 		}
-		int ret = 0;
+		//int ret = 0;
 		//ÃüÁî×Ö·û´®½âÎö
 		ResultStr result[10];
 		int result_cnt = sizeof(result) / sizeof(result[0]);
 		int ret = SplitStr(line, " ", result, &result_cnt);
-		massert_retval(ret == 0, ret);
+		massert_retnone(ret == 0);
 
 		ClientReqHandle(result, result_cnt);
 
 	} while (0);
 	if (cur_cmd.compare(last_cmd) != 0)
 	{
-		add_history(line_no_white);
+		add_history(line);
 		last_cmd = cur_cmd;
 	}
 
-	if (signal(SIGINT, client_stop) == SIG_ERR) {
+	/*if (signal(SIGINT, client_stop) == SIG_ERR) {
 		printf("signal SIGINT error!\n");
 		return;
-	}
+	}*/
 }
 
-const char * command_generator(const char *text, int state)
+char * command_generator(const char *text, int state)
 {
-	static int list_index, len;
+	static int len;
 
 	if (!state)
 	{
-		list_index = 0;
 		len = strlen(text);
 	}
 
-	const CommandInfo *cmd = CommandMgr::GetInstance()->GetFirstMatchCommand(text, len);
+	CommandInfo *cmd = CommandMgr::GetInstance()->GetFirstMutableMatchCommand(text, len);
 	if (cmd != NULL)
 	{
-		return cmd->GetCommandStr();
+		return cmd->GetMutableCommandStr();
 	}
 	return ((char *)NULL);
 }
@@ -120,7 +130,7 @@ void initialize_readline()
 	stifle_history(100);
 	read_history("simu_history");
 	using_history( );
-	rl_callback_handler_install("cmd>>", linehandler);
+	rl_callback_handler_install("cmd>>", cb_linehandler);
 
 	rl_attempted_completion_function = moc_client_completion;
 
@@ -134,7 +144,10 @@ int main(int argc, char **argv)
 		return - 1;
 	}
 
+	initialize_readline();
+
 	strncpy(my_name, argv[1], sizeof(my_name));
+	my_actor_rid = atoll(argv[2]);
 	printf("moc client start name:%s rid:%d\n", my_name, my_actor_rid);
 
 	const int fd = fileno(stdin);
@@ -144,14 +157,14 @@ int main(int argc, char **argv)
     int ret = 0;
 
     tcpClient = TcpClient::GetInstance();
-	ret = tcpClient->connect("10.154.142.48", 6789);
+	ret = tcpClient->connect("10.154.142.48", 6788);
 	massert_retval(ret == 0, ret);
 
 
 	for (;;) {
 		usleep(100);
 
-		int ret = 0;
+		//int ret = 0;
 
 		int event_num = epoll_wait(g_epollfd, events, EPOLLEVENTS, 0); //¿ØÖÆÌ¨ÊäÈë epoll¼àÌý
 		if (event_num > 0)

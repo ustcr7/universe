@@ -47,3 +47,16 @@ const CommandInfo* CommandMgr::GetFirstMatchCommand(const char *command_str, int
 	}
 	return NULL;
 }
+
+CommandInfo* CommandMgr::GetFirstMutableMatchCommand(const char *command_str, int len)
+{
+	for (std::vector<CommandInfo>::iterator iter = commands.begin(); iter != commands.end(); ++iter)
+	{
+		CommandInfo &cmd = *iter;
+		if (strncmp(cmd.GetCommandStr(), command_str, len) == 0)
+		{
+			return &cmd;
+		}
+	}
+	return NULL;
+}
