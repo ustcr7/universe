@@ -64,8 +64,12 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>Assets\dll\protobuf-net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\proto\universe_cs.cs" />
     <Compile Include="Assets\script\ButtonHandle.cs" />
     <Compile Include="Assets\script\Netwrork.cs" />
   </ItemGroup>

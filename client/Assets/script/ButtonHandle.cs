@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using universe_cs;
+using System.IO;
+using ProtoBuf;
+using System;
 
 public class ButtonHandle : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
-	}
+
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -16,11 +21,14 @@ public class ButtonHandle : MonoBehaviour {
 
     public void Click()
     {
+
         Debug.Log("登录成功");
     }
 
     public void ChangToScene(string sceneToChangeTo)
     {
         SceneManager.LoadScene(sceneToChangeTo);
+
+
     }
 }

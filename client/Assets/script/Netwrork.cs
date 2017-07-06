@@ -3,6 +3,44 @@ using System;
 using UnityEngine.SceneManagement;
 using System.Net.Sockets;
 using System.Net;
+using UnityEngine;
+using System.Collections;
+using universe_cs;
+using System.IO;
+using ProtoBuf;
+using System;
+using System.Net.Sockets;
+using System.Net;
+
+public class SerializerMgr
+{
+    static public byte[] Serialize<T>(T msg)
+    {
+        byte[] result = null;
+        if (msg != null)
+        {
+            using (var stream = new MemoryStream())
+            {
+                Serializer.Serialize<T>(stream, msg);
+                result = stream.ToArray();
+            }
+        }
+        return result;
+    }
+
+    static public T Deserialize<T>(byte[] message)
+    {
+        T result = default(T);
+        if (message != null)
+        {
+            using (var stream = new MemoryStream(message))
+            {
+                result = Serializer.Deserialize<T>(stream);
+            }
+        }
+        return result;
+    }
+}
 
 public class Netwrork : MonoBehaviour {
     public String textAreaString;
@@ -48,7 +86,33 @@ public class Netwrork : MonoBehaviour {
 
             //尝试和服务器建立连接,连接成功后打开登录界面
             if(connectRet == 0)
-            { 
+            {
+                //发送消息
+                UniverseMsg reg_msg = new UniverseMsg();
+                reg_msg.msgHead = new UniverseMsgHead();
+                reg_msg.msgHead.msgId = (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ;
+                reg_msg.msgHead.actorId = 10000;
+
+                reg_msg.msgBody = new UniverseMsgBody();
+                reg_msg.msgBody.registeReq = new ActorRegisteReq();
+                reg_msg.msgBody.registeReq.id = 10000;
+                reg_msg.msgBody.registeReq.name = "wcc";
+
+                byte[] buf_msg = SerializerMgr.Serialize(reg_msg);
+
+                int msg_len = buf_msg.Length;
+                byte[] buf_len_msg = BitConverter.GetBytes(msg_len);
+
+                byte[] total_buff = new byte[buf_msg.Length + buf_len_msg.Length];
+                buf_len_msg.CopyTo(total_buff, 0);
+                buf_msg.CopyTo(total_buff, buf_len_msg.Length);
+
+
+                int sended = clientSocket.Send(total_buff, 0, total_buff.Length, SocketFlags.None);
+                Debug.Log("发送消息完毕 长度");
+                Debug.Log(msg_len.ToString());
+
+
                 SceneManager.LoadScene("aa");
             }
             else
