@@ -11,36 +11,9 @@ using ProtoBuf;
 using System;
 using System.Net.Sockets;
 using System.Net;
+using NetUtil;
 
-public class SerializerMgr
-{
-    static public byte[] Serialize<T>(T msg)
-    {
-        byte[] result = null;
-        if (msg != null)
-        {
-            using (var stream = new MemoryStream())
-            {
-                Serializer.Serialize<T>(stream, msg);
-                result = stream.ToArray();
-            }
-        }
-        return result;
-    }
 
-    static public T Deserialize<T>(byte[] message)
-    {
-        T result = default(T);
-        if (message != null)
-        {
-            using (var stream = new MemoryStream(message))
-            {
-                result = Serializer.Deserialize<T>(stream);
-            }
-        }
-        return result;
-    }
-}
 
 public class Netwrork : MonoBehaviour {
     public String textAreaString;
@@ -66,52 +39,12 @@ public class Netwrork : MonoBehaviour {
         //textFieldString = GUI.TextField(new Rect(0, 0, 100, 20), textFieldString);
         if (GUI.Button(new Rect(0, 0, 40, 20), "连接服务器"))
         {
-            int connectRet = 0;
-            //Debug.Log("连接消息发送成功");
-            //建立一个线程,线程收发网络消息,收到消息时,调用注册的处理函数
-            Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            String ip = "118.89.165.176";
-            int port = 6789;
-            System.Net.IPEndPoint ipe = new IPEndPoint(IPAddress.Parse(ip), port);
-            try
-            {
-                clientSocket.Connect(ipe);
-                Debug.Log(" Connect Success IP: " + ip + " Port : " + port.ToString());
-            }
-            catch (Exception e)
-            {
-                connectRet = -1;
-                Debug.LogError(e.ToString());
-            }
-
+            int connectRet = TcpMgr.Init("118.89.165.176", 6789);
             //尝试和服务器建立连接,连接成功后打开登录界面
             if(connectRet == 0)
             {
                 //发送消息
-                UniverseMsg reg_msg = new UniverseMsg();
-                reg_msg.msgHead = new UniverseMsgHead();
-                reg_msg.msgHead.msgId = (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_REGISTE_REQ;
-                reg_msg.msgHead.actorId = 10000;
-
-                reg_msg.msgBody = new UniverseMsgBody();
-                reg_msg.msgBody.registeReq = new ActorRegisteReq();
-                reg_msg.msgBody.registeReq.id = 10000;
-                reg_msg.msgBody.registeReq.name = "wcc";
-
-                byte[] buf_msg = SerializerMgr.Serialize(reg_msg);
-
-                int msg_len = buf_msg.Length;
-                byte[] buf_len_msg = BitConverter.GetBytes(msg_len);
-
-                byte[] total_buff = new byte[buf_msg.Length + buf_len_msg.Length];
-                buf_len_msg.CopyTo(total_buff, 0);
-                buf_msg.CopyTo(total_buff, buf_len_msg.Length);
-
-
-                int sended = clientSocket.Send(total_buff, 0, total_buff.Length, SocketFlags.None);
-                Debug.Log("发送消息完毕 长度");
-                Debug.Log(msg_len.ToString());
-
+                UniverseMsgMgr.SendRegMsg(10000, "wcc");
 
                 SceneManager.LoadScene("aa");
             }
