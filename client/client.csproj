@@ -71,6 +71,8 @@
   <ItemGroup>
     <Compile Include="Assets\proto\universe_cs.cs" />
     <Compile Include="Assets\script\ButtonHandle.cs" />
+    <Compile Include="Assets\script\MsgHandle.cs" />
+    <Compile Include="Assets\script\NetUtil.cs" />
     <Compile Include="Assets\script\Netwrork.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

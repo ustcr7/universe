@@ -17,7 +17,7 @@ namespace NetUtil
 
     public class TcpMgr
     {
-        static private Socket clientSocket;
+        static public Socket clientSocket;
 
         static public int Init(String ip, int port)
         {
@@ -109,6 +109,58 @@ namespace NetUtil
             reg_msg.msgBody.registeReq.name = "wcc";
 
             return TcpMgr.SendMsg(reg_msg);
+        }
+
+        static public int RecvServerMsg(UniverseMsg msg)
+        {
+            switch(msg.msgHead.msgId)
+            {
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
+                    {
+                        Debug.Log("recv registe rsp");
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:
+                    {
+                        Debug.Log("recv login rsp");
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_LOGOUT_RSP:
+                    {
+                        Debug.Log("recv logout rsp");
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_GET_FULL_DATA_RSP:
+                    {
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_SET_POS_RSP:
+                    {
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_MOVE_RSP:
+                    {
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_CHAT_RSP:
+                    {
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_LEARN_SPELL_RSP:
+                    {
+                        break;
+                    }
+                case (int)UniverseMsgId.UNIVERSE_MSG_ID_CAST_SPELL_RSP:
+                    {
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Log("invalid msg id");
+                        break;
+                    }
+            }
+            return 0;
         }
     }
 
