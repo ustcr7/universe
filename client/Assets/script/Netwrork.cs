@@ -11,6 +11,7 @@ using ProtoBuf;
 using System;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading;
 using NetUtil;
 
 
@@ -19,10 +20,11 @@ public class Netwrork : MonoBehaviour {
     public String textAreaString;
     public String textFieldString;
     public GUISkin mySkin;
+    public 
 
     // Use this for initialization
     void Start () {
-        int connectRet = TcpMgr.Init("118.89.165.176", 6789);
+        int connectRet = TcpMgr.Init("118.89.165.176", 6788);
         //尝试和服务器建立连接,连接成功后打开登录界面
         if (connectRet == 0)
         {
@@ -32,31 +34,27 @@ public class Netwrork : MonoBehaviour {
         {
             Debug.Log("连接服务器失败");
         }
+
+        //WCC_TODO:创建线程,接受数据,然后Update()函数里读取这些数据进行处理
+        Thread th = new Thread(TcpMgr.RecvDataFromSocket);
+        th.Start();
     }
-	
-	// Update is called once per frame
-	void Update () {
-        return;
 
 
 
 
-        //尝试从网络读取数据
-        int max_byte_len = 1024;
-        byte[] recvBytes = new byte[max_byte_len];
+    // Update is called once per frame
+    void Update () {
 
-        int read_len = TcpMgr.clientSocket.Receive(recvBytes, max_byte_len, 0);//从服务器端接受返回信息
-        if(read_len <= 0)
-        {
-            Debug.Log("no data");
-            return;
-        }
-
-        //WCCTODO: 先假设每个网络包在一次recv中处理成功,切没有分包(这是个明显的bug,后续需要改掉)
-        int msg_byte_len = BitConverter.ToInt32(recvBytes, 0);
-        UniverseMsg msg = NetUtil.SerializerMgr.Deserialize<UniverseMsg>(recvBytes);
-
-        UniverseMsgMgr.RecvServerMsg(msg);
+        //lock(TcpMgr.GetMsgQueue())
+        //{ 
+            UniverseMsg msg = TcpMgr.PopQueueMsg();
+            if (msg == null)
+            {
+                return;
+            }
+            UniverseMsgMgr.RecvServerMsg(msg);
+        //}
     }
 
     void OnGUI()

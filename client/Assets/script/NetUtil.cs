@@ -12,12 +12,38 @@ using System;
 using System.Net.Sockets;
 using System.Net;
 using NetUtil;
+using System.Threading;
+
+
 namespace NetUtil
 {
 
     public class TcpMgr
     {
         static public Socket clientSocket;
+        static public Queue msgQueue;
+
+        static public UniverseMsg PopQueueMsg()
+        {
+            lock(msgQueue)
+            {
+
+                if(msgQueue.Count > 0)
+                { 
+                    Debug.Log("try pop msg");
+                    System.Object msg = msgQueue.Dequeue();
+                    if (msg != null)
+                    {
+                        return (UniverseMsg)msg;
+                    }
+                }
+            }
+            return null;
+        }
+        static public Queue GetMsgQueue()
+        {
+            return msgQueue;
+        }
 
         static public int Init(String ip, int port)
         {
@@ -40,7 +66,48 @@ namespace NetUtil
                 Debug.Log("连接服务器失败");
                 return -1;
             }
+            msgQueue = new Queue();
+            Debug.Log("init queue success");
             return 0;
+        }
+
+        public static void RecvDataFromSocket()
+        {
+            while (true)
+            {
+                Debug.Log("try recv data");
+                Thread.Sleep(500);
+
+                //尝试从网络读取数据
+                //byte[] result = new byte[1024];
+
+               // int max_byte_len = 1024;
+                byte[] recvBytes = new byte[1024];
+                int read_len = TcpMgr.clientSocket.Receive(recvBytes, recvBytes.Length, 0);//从服务器端接受返回信息
+                Debug.Log(string.Format("recive success len {0}, bytes {1}", read_len, recvBytes.Length));
+                //int read_len = clientSocket.Receive(result);
+                if (read_len > 0)
+                {
+                    Debug.LogFormat(string.Format("read len {0}", read_len));
+                    //lock (msgQueue)
+                    {
+                        //WCCTODO: 先假设每个网络包在一次recv中处理成功,切没有分包(这是个明显的bug,后续需要改掉)
+                        Debug.Log("aaa");
+                        int msg_byte_len = BitConverter.ToInt32(recvBytes, 0);
+                        Debug.Log(string.Format("msg body len{0}", msg_byte_len));
+
+                        UniverseMsg msg = NetUtil.SerializerMgr.Deserialize<UniverseMsg>(recvBytes, 4, msg_byte_len);//WCCTODO OFFSET
+                        Debug.Log("ccc");
+                        msgQueue.Enqueue(msg);
+                        Debug.Log("recv msg data\n");
+                    }
+                }
+                else
+                {
+                    Debug.Log("no data");
+                }
+
+            }
         }
 
         static public int SendMsg(UniverseMsg msg)
@@ -79,12 +146,12 @@ namespace NetUtil
             return result;
         }
 
-        static public T Deserialize<T>(byte[] message)
+        static public T Deserialize<T>(byte[] message, int start_idx, int count)
         {
             T result = default(T);
             if (message != null)
             {
-                using (var stream = new MemoryStream(message))
+                using (var stream = new MemoryStream(message,start_idx, count))
                 {
                     result = Serializer.Deserialize<T>(stream);
                 }
