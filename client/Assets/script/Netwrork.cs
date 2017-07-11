@@ -24,7 +24,7 @@ public class Netwrork : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        int connectRet = TcpMgr.Init("118.89.165.176", 6788);
+        int connectRet = TcpMgr.Init("118.89.165.176", 6789);
         //尝试和服务器建立连接,连接成功后打开登录界面
         if (connectRet == 0)
         {
@@ -38,10 +38,10 @@ public class Netwrork : MonoBehaviour {
         //WCC_TODO:创建线程,接受数据,然后Update()函数里读取这些数据进行处理
         Thread th = new Thread(TcpMgr.RecvDataFromSocket);
         th.Start();
+
+
+       
     }
-
-
-
 
     // Update is called once per frame
     void Update () {
@@ -65,6 +65,7 @@ public class Netwrork : MonoBehaviour {
         //textFieldString = GUI.TextField(new Rect(0, 0, 100, 20), textFieldString);
         if (GUI.Button(new Rect(0, 0, 40, 20), "注册"))
         {
+
             UniverseMsgMgr.SendRegMsg(10000, "wcc");
             Debug.Log("注册消息发送成功");
         }

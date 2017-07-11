@@ -272,7 +272,8 @@ int GameSvrDbMgr::InsertActor(ActorDB *actor)
 	if (mysql_stmt_execute(stmt) != 0)  //WCC_TODO CORE DUMP
 	{
 		printf("execute failed: %s\n", mysql_stmt_error(stmt));
-		massert_retval(0, -1);
+		//massert_retval(0, -1);
+		return -1;
 	}
 
 	if (mysql_stmt_close(stmt))

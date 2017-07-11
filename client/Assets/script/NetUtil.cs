@@ -100,6 +100,7 @@ namespace NetUtil
                         Debug.Log("ccc");
                         msgQueue.Enqueue(msg);
                         Debug.Log("recv msg data\n");
+                        Debug.Log(string.Format(">>>>>>>>>>>msgid:{0}, actorid:{1}", msg.msgHead.msgId, msg.msgHead.actorId));
                     }
                 }
                 else
@@ -185,6 +186,33 @@ namespace NetUtil
                 case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
                     {
                         Debug.Log("recv registe rsp");
+
+                        //debug code:
+                        GameObject obj1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        if(obj1 != null)
+                        {
+                            Debug.Log("create obj success");
+                        }
+                        obj1.transform.position = new Vector3(1, 1, 1);
+                        obj1.name = "player";
+                        obj1.transform.Rotate(new Vector3(10, 10, 10));
+                        obj1.transform.Translate(new Vector3(10, 10, 10));
+
+                        //GameObject obj2 = GameObject.FindGameObjectWithTag("player");
+                        // if (obj2 == null)
+                        //{
+                        //    Debug.Log("empty obj");
+                        //    return -1;
+                        // }
+                        // obj2.transform.Rotate(new Vector3(1, 10, 1));
+
+                        GameObject obj3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        obj3.transform.position = new Vector3(1, 1, 1);
+                        obj3.name = "player2";
+                        if (obj3 != null)
+                        {
+                            Debug.Log("create obj success");
+                        }
                         break;
                     }
                 case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:

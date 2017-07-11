@@ -110,6 +110,7 @@ int GamesvrMsgProcesser::SendActorRegisteRsp(u64 connId, u64 acotrId, int result
 	connMsg.connId = connId;
 	UniverseMsg *msgData = &connMsg.msg;
 	msgData->mutable_msghead()->set_msgid(UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP);
+	msgData->mutable_msghead()->set_actorid(acotrId);
 	msgData->mutable_msgbody()->mutable_registersp()->set_result(result);
 
 	printf("send registe rsp actor:%llu result:%d\n", acotrId, result);
