@@ -24,7 +24,7 @@ public class Netwrork : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        int connectRet = TcpMgr.Init("118.89.165.176", 6789);
+        int connectRet = TcpMgr.Init("118.89.165.176", 6788);
         //尝试和服务器建立连接,连接成功后打开登录界面
         if (connectRet == 0)
         {

@@ -163,6 +163,7 @@ namespace NetUtil
 
     public class UniverseMsgMgr
     {
+        //static public GameObject playerPrefab;
         static public int SendRegMsg(ulong actorid, String name)
         {
 
@@ -186,8 +187,15 @@ namespace NetUtil
                 case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_REGISTE_RSP:
                     {
                         Debug.Log("recv registe rsp");
-
+                        Vector3 c = new Vector3();
+                        c.Set(0, 0, 0);
+                        Quaternion d = new Quaternion();
+                        d.Set(0, 0, 0, 0);
+                        string ad = "palyerPrefab";
+                        GameObject.Instantiate(Resources.Load(ad), c, d);
+                        //GameObject palyer = (GameObject)GameObject.Instantiate(playerPrefab);
                         //debug code:
+                        /*
                         GameObject obj1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         if(obj1 != null)
                         {
@@ -198,13 +206,6 @@ namespace NetUtil
                         obj1.transform.Rotate(new Vector3(10, 10, 10));
                         obj1.transform.Translate(new Vector3(10, 10, 10));
 
-                        //GameObject obj2 = GameObject.FindGameObjectWithTag("player");
-                        // if (obj2 == null)
-                        //{
-                        //    Debug.Log("empty obj");
-                        //    return -1;
-                        // }
-                        // obj2.transform.Rotate(new Vector3(1, 10, 1));
 
                         GameObject obj3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         obj3.transform.position = new Vector3(1, 1, 1);
@@ -213,6 +214,7 @@ namespace NetUtil
                         {
                             Debug.Log("create obj success");
                         }
+                        */
                         break;
                     }
                 case (int)UniverseMsgId.UNIVERSE_MSG_ID_ACTOR_LOGIN_RSP:
