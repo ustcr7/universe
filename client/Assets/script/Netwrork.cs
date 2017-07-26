@@ -24,6 +24,7 @@ public class Netwrork : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        /*
         int connectRet = TcpMgr.Init("118.89.165.176", 6788);
         //尝试和服务器建立连接,连接成功后打开登录界面
         if (connectRet == 0)
@@ -38,9 +39,9 @@ public class Netwrork : MonoBehaviour {
         //WCC_TODO:创建线程,接受数据,然后Update()函数里读取这些数据进行处理
         Thread th = new Thread(TcpMgr.RecvDataFromSocket);
         th.Start();
+        */
 
-
-       
+        TcpMgr.Init("118.89.165.176", 6788);
     }
 
     // Update is called once per frame
@@ -57,6 +58,7 @@ public class Netwrork : MonoBehaviour {
         //}
     }
 
+    /*
     void OnGUI()
     {
         GUI.skin = mySkin;
@@ -88,5 +90,5 @@ public class Netwrork : MonoBehaviour {
         }
 
     }
-
+    */
 }

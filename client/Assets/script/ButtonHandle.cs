@@ -5,6 +5,7 @@ using universe_cs;
 using System.IO;
 using ProtoBuf;
 using System;
+using NetUtil;
 
 public class ButtonHandle : MonoBehaviour {
 
@@ -22,13 +23,15 @@ public class ButtonHandle : MonoBehaviour {
     public void Click()
     {
 
-        Debug.Log("登录成功");
+        
     }
 
     public void ChangToScene(string sceneToChangeTo)
     {
-        SceneManager.LoadScene(sceneToChangeTo);
+        UniverseMsgMgr.SendRegMsg(10000, "wcc");
+        Debug.Log("注册消息发送成功");
 
+        SceneManager.LoadScene(sceneToChangeTo);
 
     }
 }

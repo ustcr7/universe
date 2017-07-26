@@ -67,6 +67,10 @@ namespace NetUtil
                 return -1;
             }
             msgQueue = new Queue();
+
+            Thread th = new Thread(TcpMgr.RecvDataFromSocket);
+            th.Start();
+
             Debug.Log("init queue success");
             return 0;
         }
@@ -75,7 +79,7 @@ namespace NetUtil
         {
             while (true)
             {
-                Debug.Log("try recv data");
+                //Debug.Log("try recv data");
                 Thread.Sleep(500);
 
                 //尝试从网络读取数据

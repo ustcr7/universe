@@ -25,6 +25,9 @@ enum UNIVERSE_ERRCODE{
 	ERR_INST_NOT_IN_INSTANCE          = -30001,
 	ERR_INST_NOT_IN_SAME_INSTANCEE    = -30002,
 
+	//------quest error code --------
+	ERR_QUEST_NOT_ACCEPT              = -40001,
+
 };
 
 
