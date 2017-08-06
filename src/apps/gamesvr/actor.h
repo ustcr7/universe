@@ -49,6 +49,10 @@ private:
 	u64 move_timerid;   //移动定时器
 
 	//战斗模块数据
+
+
+	//任务模块数据
+	ActorQuestArray quest_array;
 };
 
 

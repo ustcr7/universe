@@ -13,6 +13,8 @@ CFLAGS= -g -Werror -Wall
 MYSQL_INCLUDE_PATH=/usr/local/mysql/include
 MYSQL_LIB_PATH=/usr/local/mysql/lib
 
+LUA_INCLUDE_PATH=/usr/include/lua5.2
+
 READLINE_INCLUDE_PATH=/usr/local/include/readline
 
 PROTOC=protoc

@@ -10,6 +10,7 @@ ALL_CPP += move/*.cpp
 ALL_CPP += chat/*.cpp
 ALL_CPP += battle/*.cpp
 ALL_CPP += db/*.cpp
+ALL_CPP += quest/*.cpp
 
 CFLAGS += -I .
 CFLAGS += -I ../../proto/

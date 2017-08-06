@@ -27,6 +27,8 @@ enum UNIVERSE_ERRCODE{
 
 	//------quest error code --------
 	ERR_QUEST_NOT_ACCEPT              = -40001,
+	ERR_QUEST_TARGET_NO_FINISH        = -40002,
+	ERR_QUEST_ALREADY_ACCEPTED        = -40003,
 
 };
 

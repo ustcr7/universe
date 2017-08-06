@@ -4,7 +4,8 @@ include ../Makefile.in
 
 MODULE_NAME=unitest
 MODULE_OBJ=$(MODULE_NAME)d
-COMPILE_CPP = test_common_util.cpp
+COMPILE_CPP = test_lua.cpp
+#COMPILE_CPP = test_common_util.cpp
 #COMPILE_CPP = test_protobuf.cpp
 #COMPILE_CPP = test_db_util.cpp
 #COMPILE_CPP = test_proto.cpp
@@ -15,6 +16,7 @@ CFLAGS += -I .
 CFLAGS += -I ../common/
 CFLAGS += -I ../proto/
 CFLAGS += -I $(MYSQL_INCLUDE_PATH)
+CFLAGS += -I $(LUA_INCLUDE_PATH)
 
 #CFLAGS += -L $(PROJ_LIB_ROOT)/
 LDFLAGS += -L $(PROJ_LIB_ROOT)/
@@ -23,7 +25,7 @@ DEP_LIB = $(MYSQL_LIB_PATH)/libmysqlclient.a
 
 
 all:$(COMPILE_CPP)
-	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lprotobuf -lpthread $(DEP_LIB)
+	$(CPP) $(CFLAGS) $^  $(LDFLAGS) -o $(PROJ_BIN_ROOT)/$(MODULE_NAME)/$(MODULE_OBJ) -lcommon -lproto -lprotobuf -lpthread -llua5.2 $(DEP_LIB)
 arcv:
 
 	@echo "nothing"
