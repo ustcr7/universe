@@ -40,10 +40,73 @@ class QuestAcceptActorGsCond : public QuestAcceptCond
 {
 };
 //---------------------------完成条件---------------------------
+enum QUEST_FINISH_COND_TYPE
+{
+	QUEST_FINISH_COND_NONE               = 0,
+	QUEST_FINISH_COND_KILL_MONSTER       = 1,
+	QUEST_FINISH_COND_COLLECT_ENTITY     = 2,
+};
+class QuestCommitKillMonsterCond : public QuestCommitInstCond
+{
+	public GetCondType()
+	{
+		return QUEST_FINISH_COND_KILL_MONSTER;
+	}
+	public int GetTargetValue()
+	{
+		return monster_cnt;
+	}
+	public TriggerEventData *BuildTriggerEventData()
+	{
+		TriggerEventKillMonsterData *kill_monster_data = new TriggerEventKillMonsterData();
+		massert_retval(data != NULL, NULL);
+		kill_monster_data->SetMonsterId(monster_id);
+		return kill_monster_data;
+	}
+	public TRIGGER_EVENT_TYPE GetTriggerEventType()
+	{
+		return TRIGGER_EVENT_KILL_MONSTER;
+	}
+
+	public void SetMonsterId(int id)
+	{
+		monster_id = id;
+	}
+	public void SetMonsterCnt(int cnt)
+	{
+		monster_cnt = cnt;
+	}
+	int monster_id;
+	int monster_cnt;
+};
+class QuestCommitCollectEntityCond : public QuestCommitInstCond
+{
+	public GetCondType()
+	{
+		return QUEST_FINISH_COND_COLLECT_ENTITY;
+	}
+	public int GetTargetValue()
+	{
+		return entity_cnt;
+	}
+	public TriggerEventData *BuildTriggerEventData()
+	{
+		massert_retval(0, NULL); //WCCTODO: not implement
+		return NULL;
+	}
+	public TRIGGER_EVENT_TYPE GetTriggerEventType()
+	{
+		return TRIGGER_EVENT_COLLECT_ENTITY;
+	}
+	int entity_id;
+	int entity_cnt;
+};
 class QuestCommitInstCond
 {
-	QUEST_FINISH_COND_TYPE type;
-	int target_value;
+	public virtual QUEST_FINISH_COND_TYPE GetCondType() = 0;
+	public virtual int GetTargetValue() = 0;
+	public virtual TriggerEventData *BuildTriggerEventData() = 0;
+	public virtual TRIGGER_EVENT_TYPE GetTriggerEventType() = 0;
 };
 class QuestCommitConstCond
 {
@@ -104,32 +167,138 @@ static const int MAX_COMMIT_EVENT_SIZE = 10;
 class QuestRes
 {
 	int quest_id;
-	QuestAcceptCond accept_conds[MAX_ACCEPT_COND_SIZE];
+
+	int             accept_cond_cnt;
+	QuestAcceptCond* accept_conds[MAX_ACCEPT_COND_SIZE];
+
 	int                  inst_cond_cnt;
-	QuestCommitInstCond  commit_inst_conds[MAX_COMMIT_COND_SIZE];      //需要通过counter来记录发生时刻
+	QuestCommitInstCond*  commit_inst_conds[MAX_COMMIT_COND_SIZE];      //需要通过counter来记录发生时刻
+
 	int                  const_cond_cnt;
-	QuestCommitConstCond commit_const_conds[MAX_COMMIT_COND_SIZE];     //永久性条件,在提交任务时校验一下即可
+	QuestCommitConstCond* commit_const_conds[MAX_COMMIT_COND_SIZE];     //永久性条件,在提交任务时校验一下即可
+
 	int                  commit_event_cnt;
-	QuestCommitEvent     commit_event[MAX_COMMIT_EVENT_SIZE];
+	QuestCommitEvent*     commit_event[MAX_COMMIT_EVENT_SIZE];
 
 };
 
+class QuestResMgr
+{
+	//测试用在内存中随便构造几个qust
+	int InitByTest()
+	{
+		{
+			QuestRes kill_monster_quest;
+			kill_monster_quest.quest_id = 100001;
+			kill_monster_quest.accept_cond_cnt = 0;
+			kill_monster_quest.const_cond_cnt = 0;
+
+			kill_monster_quest.inst_cond_cnt = 1;
+			QuestCommitKillMonsterCond *kill_monster_cond = new QuestCommitKillMonsterCond();
+			kill_monster_cond->SetMonsterId(2000000);
+			kill_monster_cond->SetMonsterCnt(10);
+			kill_monster_quest.commit_inst_conds[0] = kill_monster_cond;
+			AddQuestRes(&kill_monster_quest);
+		}
+		{
+			QuestRes collect_entity_quest;
+			collect_entity_quest.quest_id = 100002;
+			collect_entity_quest.accept_cond_cnt = 0;
+			collect_entity_quest.const_cond_cnt = 0;
+
+			collect_entity_quest.inst_cond_cnt = 1;
+			QuestCommitCollectEntityCond *collect_entity_cond = new QuestCommitCollectEntityCond();
+			collect_entity_quest->SetEntityId(2000000);
+			collect_entity_quest->SetEntityCnt(10);
+			collect_entity_quest.commit_inst_conds[0] = collect_entity_cond;
+			AddQuestRes(&collect_entity_quest);
+		}
+	}
+	//WCCTODO:从文件中读取
+	int InitByQuestFile()
+	{
+		massert_retval(0, -1);
+		return 0;
+	}
+
+	int AddQuestRes(QuestRes *res_quest)
+	{
+		if (GetQuestResById(res_quest->GetId()) != NULL)
+		{
+			return ERR_ALREADY_EXISTS;
+		}
+		res_quest_map.insert(std::make_pair(res_quest->GetId(), res_quest));
+	}
+
+	QuestRes* GetQuestResById(int quest_id)
+	{
+		std::map<int, QuestRes*>::iterator iter = res_quest_map.find(quest_id);
+		if (iter == res_quest_map.end())
+		{
+			return NULL;
+		}
+		return iter->second;
+	}
+
+private:
+	std::map<int, QuestRes*> res_quest_map;
+};
+
 static const int ACTOR_MAX_COUNTER_SIZE = 16; //最多16个条件
+static u64 quest_mid = 0;
 class ActorQuest
 {
 public:
 	int InitByRes(QuestRes *res_quest)
 	{
+		mid = quest_mid++;
 		//init counter
 		quest_id = res_quest->quest_id;
 		inst_cond_cnt = res_quest->const_cond_cnt;
 		memset(inst_cond_counter, 0, sizeof(inst_cond_counter));
+
+		//WCCTODO: parse accept/commit cond
+
+		//quest commit cond --> counter --> init Trigger;
+		inst_cond_cnt = 0;
+		for (int i = 0; i < res_quest->commit_cond_cnt; ++i)
+		{
+			QuestCommitInstCond *cond = &res_quest->commit_inst_conds[i];
+
+			TriggerData trigger;
+
+			QuestCounterCallbackData *cb_data = new QuestCounterCallbackData();
+			cb_data->quest_mid = mid;
+			cb_data->counter_idx = inst_cond_cnt;
+			cb_data->counter_target_value = cond->GetTargetValue();
+			
+			trigger.module_type = TRIGGER_MODULE_QUEST;
+			trigger.calllback_data = cb;
+			trigger.event_type = cond->GetTriggerEventType();
+			trigger.event_data = cond->BuildTriggerEventData();
+
+			inst_cond_cnt++;
+		}
+		return 0;
 	}
 private:
 	int quest_id;
+	int mid; //内存ID
 	//counter
 	int inst_cond_cnt;
 	int inst_cond_counter[MAX_COMMIT_COND_SIZE];
+};
+
+class ActorQuestMgr
+{
+public:
+	static ActorQuestMgr* GetInstance();
+	//int AddActorQuest(ActorQuest *actor_quest);
+	ActorQuest* AllocActorQuest();
+	void        FreeActorQuest();
+	const ActorQuest* GetActorQuest(u64 quest_mid) const;
+private:
+	std::map<u64, ActorQuest*> actor_quest_map;
 };
 
 static const int ACTTOR_MAX_QUEST_ARRAY_SIZE = 1024;
@@ -192,9 +361,6 @@ int actor_accept_quest(Actor *actor, int quest_id)
 	QuestRes *quest_res = QuestResMgr::GetInstance()->GetQuest(quest_id);
 	actor_quest->InitByRes(res_quest);
 
-	//add trigger for actor:
-
-
 	return 0;
 }
 
@@ -231,26 +397,5 @@ int actor_commit_quest(Actor *actor, int quest_id)
 	return 0;
 }
 
-//ActorDead, MonsterDead, OnEntityCollected:
-int actor_quest_inc_counter(Actor *actor);
-
-
-
-
-//WCCTODO:效率很低,改成trigger
-int actor_quest_on_kill_monster(Actor *actor, u64 monster_mid)
-
-int actor_quest_on_collect_entity(Actor *actor, int entity_id)
-{
-	ActorQuestArray *quest_array = &actor->quest_array;
-	for (int i = 0; i < quest_array.quest_count; ++i)
-	{
-		ActorQuest *actor_quest = &quest_array.quests[i];
-		if (actor_quest->)
-		{
-
-		}
-	}
-}
 
 #endif
