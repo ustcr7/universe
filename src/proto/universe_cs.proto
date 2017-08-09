@@ -21,6 +21,14 @@ enum UniverseMsgId
 	UNIVERSE_MSG_ID_LEARN_SPELL_RSP                = 17;
 	UNIVERSE_MSG_ID_CAST_SPELL_REQ                 = 18;
 	UNIVERSE_MSG_ID_CAST_SPELL_RSP                 = 19;
+	UNIVERSE_MSG_ID_KILL_MONSTER_REQ               = 20; //实际上应该是释放技能的效果里杀死monster,这里先简单处理一下
+	UNIVERSE_MSG_ID_KILL_MONSTER_RSP               = 21;
+	UNIVERSE_MSG_ID_COLLECT_ENTITY_REQ             = 22;
+	UNIVERSE_MSG_ID_COLLECT_ENTITY_RSP             = 23;
+	UNIVERSE_MSG_ID_ACCEPT_QUEST_REQ               = 24;
+	UNIVERSE_MSG_ID_ACCEPT_QUEST_RSP               = 25;
+	UNIVERSE_MSG_ID_COMMIT_QUEST_REQ               = 26;
+	UNIVERSE_MSG_ID_COMMIT_QUEST_RSP               = 27;
 }
 
 message UniverseMsgHead
@@ -151,6 +159,42 @@ message CastSpellRsp
 	optional int32  result        = 2;
 }
 
+message KillMonsterReq
+{
+    optional int32 monsterId      = 1;
+}
+message KillMonsterRsp
+{
+    optional int32 result         = 2;
+}
+
+message CollectEntityReq
+{
+    optional int32 entityId      = 1;
+}
+message CollectEntityRsp
+{
+    optional int32 result         = 2;
+}
+
+message AcceptQuestReq
+{
+    optional int32 questId      = 1;
+}
+message AcceptQuestRsp
+{
+    optional int32 result         = 2;
+}
+
+message CommitQuestReq
+{
+    optional int32 questId      = 1;
+}
+message CommitQuestRsp
+{
+    optional int32 result         = 2;
+}
+
 message UniverseMsgBody
 {
     optional ActorRegisteReq             registeReq          = 1;
@@ -172,6 +216,14 @@ message UniverseMsgBody
 	optional LearnSpellRsp               learnSpellRsp       = 17;
 	optional CastSpellReq                castSpellReq        = 18;  //释放技能
 	optional CastSpellRsp                castSpellRsp        = 19;
+	optional KillMonsterReq              killMonsterReq      = 20;
+	optional KillMonsterRsp              killMonsterRsp      = 21;
+	optional CollectEntityReq            collectEntityReq    = 22;
+	optional CollectEntityRsp            collectEntityRsp    = 23;
+	optional AcceptQuestReq              accetpQuestReq      = 24;
+	optional AcceptQuestRsp              accetpQuestRsp      = 25;
+	optional CommitQuestReq              commitQuestReq      = 26;
+	optional CommitQuestRsp              commitQuestReq      = 27;
 }
 
 message UniverseMsg

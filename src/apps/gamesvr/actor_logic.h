@@ -19,6 +19,8 @@ public:
 	int ActorChatReq(u64 connId, u64 srcActorid, u64 dstActorId, ChatType chatType, const char *content);
 	int ActorLearnSpellReq(u64 connId, u64 actor_rid, int spellid);
 	int ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid, int spellid);
+	int ActorAcceptQuestReq(u64 connId, u64 actor_rid, int quest_id);
+	int ActorCommitQuestReq(u64 connId, u64 actor_rid, int quest_id);
 private:
 };
 

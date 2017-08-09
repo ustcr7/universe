@@ -249,3 +249,26 @@ int ActorReqHandle::ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid,
 	SpellMgr *spl_mgr = SpellMgr::GetInstance();
 	return spl_mgr->UvBattleCastSpell(caster, target, spellid);
 }
+
+int ActorReqHandle::ActorAcceptQuestReq(u64 connId, u64 actor_rid, int quest_id)
+{
+	printf("cast spell caster:%llu target:%llu spell:%d\n", actor_rid, target_rid, spellid);
+	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
+	Actor *actor = actor_mgr->GetActorById(actor_rid);
+	massert_retval(actor != NULL, ERR_INVALID_PARAM);
+
+	ActorQuestMgr::GetInstance()->AccepQuest(actor, quest_id);
+	return 0;
+}
+
+
+int ActorReqHandle::ActorCommitQuestReq(u64 connId, u64 actor_rid, int quest_id)
+{
+	printf("cast spell caster:%llu target:%llu spell:%d\n", actor_rid, target_rid, spellid);
+	ActorMgr *actor_mgr = ActorMgr::GetSingleInstance();
+	Actor *actor = actor_mgr->GetActorById(actor_rid);
+	massert_retval(actor != NULL, ERR_INVALID_PARAM);
+
+	ActorQuestMgr::GetInstance()->CommitQuest(actor, quest_id);
+	return 0;
+}

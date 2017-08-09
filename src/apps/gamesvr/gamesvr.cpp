@@ -7,6 +7,7 @@
 #include "../../proto/universe_cs.pb.h"
 #include "gamesvr_msg_processer.h"
 #include "battle/battle_res.h"
+#include "quest/quest_res.h"
 #include "instance_mgr.h"
 #include <unistd.h>
 #include <ctime>
@@ -89,6 +90,10 @@ int main()
 	//技能模块初始化
 	SpellResMgr *spell_res_mgr = SpellResMgr::GetInstance();
 	spell_res_mgr->InitSpellRes();
+
+	//任务模块初始化
+	QuestResMgr *quest_res_mgr = QuestResMgr::GetInstance();
+	quest_res_mgr->InitByTest();  //暂时还没有文件加载模块,先在内存中构造几个吧
 
 	//DB初始化
 	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
