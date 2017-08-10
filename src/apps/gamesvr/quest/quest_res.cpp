@@ -1,5 +1,3 @@
-#ifndef __UNIVERSE_QUEST_H__
-#define __UNIVERSE_QUEST_H__
 #include "quest_res.h"
 
 public QuestCommitKillMonsterCond::GetCondType()
@@ -72,7 +70,7 @@ int QuestCommitAddMoney::ExecuteEvent(Actor *actor)
 
 
 static QuestResMgr gs_quest_res_mgr = NULL;
-static QuestResMgr* GetInstance()
+static QuestResMgr* QuestResMgr::GetInstance()
 {
 	if (gs_quest_res_mgr == NULL)
 	{
@@ -139,10 +137,3 @@ QuestRes* QuestResMgr::GetQuestResById(int quest_id)
 	}
 	return iter->second;
 }
-
-
-
-
-
-
-#endif

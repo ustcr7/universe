@@ -44,7 +44,6 @@ int ActorReqHandle::ActorRegisteReq(u64 conn_id, u64 id, const char *name)
 	GameSvrDbMgr *db_mgr = GameSvrDbMgr::GetInstance();
 	db_mgr->InsertActor(&db_actor);
 
-
 	GamesvrMsgProcesser *msgProcesser = GamesvrMsgProcesser::GetSingleInstance();
 	massert_retval(msgProcesser != NULL, ERR_UNKNOWN);
 	msgProcesser->SendActorRegisteRsp(conn_id, id, ret);

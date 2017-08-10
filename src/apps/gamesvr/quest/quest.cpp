@@ -1,5 +1,10 @@
 #include "quest.h"
 
+int ActorQuest::GetQuestId()
+{
+	return quest_id;
+}
+
 int ActorQuest::InitByRes(QuestRes *res_quest)
 {
 	quest_id = res_quest->quest_id;
@@ -101,17 +106,45 @@ ActorQuest* ActorQuestMgr::AllocActorQuest()
 
 	quest->mid = quest_mid++;
 
+	actor_quest_map.insert(std::make_pair(quest->mid, quest));
+
 	return quest;
 }
-void ActorQuestMgr::FreeActorQuest()
+void ActorQuestMgr::FreeActorQuest(u64 quest_mid)
 {
-
+	const ActorQuest *ptr =	ActorQuestMgr::GetActorQuest(quest_mid);
+	if (ptr != NULL)
+	{
+		delete ptr;
+	}
+	actor_quest_map.erase(quest_mid);
 }
 const ActorQuest* 	ActorQuestMgr::GetActorQuest(u64 quest_mid) const
 {
-
+	std::map<u64, ActorQuest*>::iterator iter = actor_quest_map.find(quest_mid);
+	if (iter == actor_quest_map.end())
+	{
+		return NULL;
+	}
+	return iter->second;
 }
 
+int ActorQuestArray::AddQuest(ActorQuest* quest)
+{
+	//2017Äê8ÔÂ11ÈÕ00:41:03
+}
+
+ActorQuest* ActorQuestArray::GetActorQuest(int quest_id)
+{
+	for (int i = 0; i < quest_cound; ++i)
+	{
+		if (quests[i]->GetQuestId() == quest_id)
+		{
+			return &quests[i];
+		}
+	}
+	return NULL;
+}
 
 //---------------------------quest api---------------------------
 int _commit_valid_const_quest_condition(Actor *actor, QuestRes *res_quest)

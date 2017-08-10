@@ -7,9 +7,8 @@ static u64 quest_mid = 0;
 class ActorQuest
 {
 public:
+	int GetQuestId();
 	int InitByRes(QuestRes *res_quest);
-	return 0;
-}
 private:
 	int quest_id;
 	int mid; //ÄÚ´æID
@@ -29,7 +28,7 @@ public:
 private:
 	//int AddActorQuest(ActorQuest *actor_quest);
 	ActorQuest* AllocActorQuest();
-	void        FreeActorQuest();
+	void        FreeActorQuest(u64 quest_mid);
 	const ActorQuest* GetActorQuest(u64 quest_mid) const;
 private:
 	std::map<u64, ActorQuest*> actor_quest_map;
@@ -40,10 +39,13 @@ private:
 static const int ACTTOR_MAX_QUEST_ARRAY_SIZE = 1024;
 class ActorQuestArray
 {
+public:
+	ActorQuest* GetActorQuest(int quest_id);
+	int AddQuest(ActorQuest* quest);
+private:
 	int quest_count;
-	ActorQuest quests[ACTTOR_MAX_QUEST_ARRAY_SIZE];
+	ActorQuest* quests[ACTTOR_MAX_QUEST_ARRAY_SIZE];
 };
-
 
 
 #endif

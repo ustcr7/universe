@@ -34,7 +34,7 @@ class QuestCommitKillMonsterCond : public QuestCommitInstCond
 };
 class QuestCommitCollectEntityCond : public QuestCommitInstCond
 {
-	public GetCondType();
+	public int GetCondType();
 	public int GetTargetValue();
 	public TriggerEventData *BuildTriggerEventData();
 	public TRIGGER_EVENT_TYPE GetTriggerEventType();
@@ -51,7 +51,7 @@ class QuestCommitInstCond
 class QuestCommitConstCond
 {
 public:
-	virtual int ValidCondSatify(Actor *actor); //条件是否满足
+	virtual int ValidCondSatify(Actor *actor) = 0; //条件是否满足
 };
 class QuestCommitReachLevelCond : public QuestCommitConstCond
 {
@@ -75,10 +75,7 @@ public class QuestCommitEvent
 public class QuestCommitGiveItem : public QuestCommitEvent
 {
 public:
-	int ExecuteEvent(Actor *actor)
-	{
-		//add item;
-	}
+	int ExecuteEvent(Actor *actor);
 private:
 	int item_id;
 	int item_num;
@@ -110,27 +107,20 @@ class QuestRes
 
 	int                  commit_event_cnt;
 	QuestCommitEvent*     commit_event[MAX_COMMIT_EVENT_SIZE];
-
 };
 
 class QuestResMgr
 {
 public:
 	static QuestResMgr* GetInstance();
-	//测试用在内存中随便构造几个qust
-	int InitByTest();
-	//WCCTODO:从文件中读取
-	int InitByQuestFile();
+	int InitByTest();                         //测试用在内存中随便构造几个qust
+	int InitByQuestFile();                    //WCCTODO:从文件中读取
 
 	int AddQuestRes(QuestRes *res_quest);
-
 	QuestRes* GetQuestResById(int quest_id);
-
 private:
 	std::map<int, QuestRes*> res_quest_map;
 };
-
-
 
 
 #endif
