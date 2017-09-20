@@ -223,7 +223,7 @@ message UniverseMsgBody
 	optional AcceptQuestReq              accetpQuestReq      = 24;
 	optional AcceptQuestRsp              accetpQuestRsp      = 25;
 	optional CommitQuestReq              commitQuestReq      = 26;
-	optional CommitQuestRsp              commitQuestReq      = 27;
+	optional CommitQuestRsp              commitQuestRsp      = 27;
 }
 
 message UniverseMsg
