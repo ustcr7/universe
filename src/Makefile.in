@@ -11,11 +11,11 @@ CPP=g++
 CFLAGS= -g -Werror -Wall 
 
 MYSQL_INCLUDE_PATH=/usr/include/mysql
-MYSQL_LIB_PATH=/usr/local/mysql/lib
+MYSQL_LIB_PATH=/usr/lib64/mysql/
 
 LUA_INCLUDE_PATH=/usr/include/lua5.2
 
-READLINE_INCLUDE_PATH=/usr/local/include/readline
+READLINE_INCLUDE_PATH=/usr/include/readline
 
 PROTOC=protoc
 PROTOBUF_BIN_PATH=/usr/bin
