@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>  
 
 extern "C" {
@@ -13,5 +14,11 @@ int main(int argc, char *argv[])
 	luaL_openlibs(L);
 	luaL_dofile(L, "test.lua");
 	lua_close(L);
+	return 0;
+}
+*/
+
+int main(int argc, char *argv[])
+{
 	return 0;
 }

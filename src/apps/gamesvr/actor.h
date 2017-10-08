@@ -52,7 +52,7 @@ private:
 
 
 	//任务模块数据
-	ActorQuestArray quest_array;
+	//ActorQuestArray quest_array;
 };
 
 

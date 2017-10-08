@@ -249,6 +249,7 @@ int ActorReqHandle::ActorCastSpellReq(u64 connId, u64 actor_rid, u64 target_rid,
 	return spl_mgr->UvBattleCastSpell(caster, target, spellid);
 }
 
+/*
 int ActorReqHandle::ActorAcceptQuestReq(u64 connId, u64 actor_rid, int quest_id)
 {
 	printf("cast spell caster:%llu target:%llu spell:%d\n", actor_rid, target_rid, spellid);
@@ -271,3 +272,4 @@ int ActorReqHandle::ActorCommitQuestReq(u64 connId, u64 actor_rid, int quest_id)
 	ActorQuestMgr::GetInstance()->CommitQuest(actor, quest_id);
 	return 0;
 }
+*/

@@ -4,7 +4,7 @@ include ../Makefile.in
 
 MODULE_NAME=apps
 SUB_MODULE += gamesvr
-
+#SUB_MODULE += mailsvr
 
 define make_sub
 	pwd && cd $(strip $(1))  && pwd && make && cd - && pwd

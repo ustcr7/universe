@@ -72,11 +72,11 @@ int Actor::DumpToDb(ActorDB *db_actor) const
 	int state = (int)GetUnitState()->GetUnitState();
 	db_unit_state->set_state(state);
 
-	int data_size = db_game_data.ByteSizeLong();
-	db_game_data.SerializeToArray(db_actor->GetMutableGameDataBlob(), data_size);
-	db_actor->SetGameDataBlobSize(data_size);
+	//int data_size = db_game_data.ByteSizeLong();
+	//db_game_data.SerializeToArray(db_actor->GetMutableGameDataBlob(), data_size);
+	//db_actor->SetGameDataBlobSize(data_size);
 
-	printf("dump success, game data bolb size:%d\n", data_size);
+	//printf("dump success, game data bolb size:%d\n", data_size);
 
 	return 0;
 }
