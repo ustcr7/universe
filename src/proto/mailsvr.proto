@@ -1,0 +1,16 @@
+syntax="proto2";
+package mailsvr;
+
+option cc_generic_services = true;
+
+message GetMailListRequest {
+      required string message = 1;
+};
+
+message GetMailListResponse {
+      required string message = 1;
+};
+
+service MailsvrService {
+      rpc GetMailList(GetMailListRequest) returns (GetMailListResponse);
+};

@@ -5,8 +5,8 @@ PROJ_BIN_ROOT=$(PROJ_ROOT)/bin
 PROJ_LIB_ROOT=$(PROJ_ROOT)/lib
 PROJ_DEP_ROOT=$(PROJ_ROOT)/dep
 
-GCC=gcc
-CPP=g++
+GCC=gcc -std=c++11
+CPP=g++ -std=c++11
 
 CFLAGS= -g -Werror -Wall 
 
@@ -14,6 +14,9 @@ MYSQL_INCLUDE_PATH=/usr/include/mysql
 MYSQL_LIB_PATH=/usr/lib64/mysql/
 
 LUA_INCLUDE_PATH=/usr/include/lua5.2
+
+BRPC_INCLUDE_PATH=$(PROJ_ROOT)/dep/brpc/output/include
+BRPC_LIB_PATH=$(PROJ_ROOT)/dep/brpc/output/lib
 
 READLINE_INCLUDE_PATH=/usr/include/readline
 
