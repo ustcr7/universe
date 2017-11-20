@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+message GsRankRecord
+{
+    optional int32                   gs    = 1;
+}								    
+message LevelRankRecord			    
+{								    
+    optional int32                   level    = 1;
+}
+
+message RankRecord
+{
+  optional int32                     rank_type    = 1;
+  optional uint64                    rank_key     = 2;
+  optional GsRankRecord              gs_record    = 3;
+  optional LevelRankRecord           level_record = 4;
+}

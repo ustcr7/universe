@@ -19,3 +19,8 @@
 /client/Library/metadata/ed/ed05317462891b744ae2a70cc6a45180
 /client/Library/metadata/ed/ed05317462891b744ae2a70cc6a45180.info
 /client/Library
+/linux_gen_files/proto
+*.sln
+*.vcxproj
+*.filters
+*.user
