@@ -28,6 +28,8 @@ UniverseDbUtil* UniverseDbUtil::GetInstance()
 
 int UniverseDbUtil::Init()
 {
+	return 0; //WCC_TODO ¡Ÿ ±◊¢ ÕµÙ
+
     //int ret = 0;
 	if (mysql_library_init(0, NULL, NULL)) {
 		printf("could not initialize MySQL library\n");

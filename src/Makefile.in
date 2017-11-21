@@ -3,7 +3,7 @@
 PROJ_SRC_ROOT=$(PROJ_ROOT)/src
 PROJ_BIN_ROOT=$(PROJ_ROOT)/bin
 PROJ_LIB_ROOT=$(PROJ_ROOT)/lib
-PROJ_DEP_ROOT=$(PROJ_ROOT)/dep
+PROJ_DEP_ROOT=$(PROJ_ROOT)/deps
 
 GCC=gcc
 CPP=g++
@@ -16,6 +16,10 @@ MYSQL_LIB_PATH=/usr/lib64/mysql/
 LUA_INCLUDE_PATH=/usr/include/lua5.2
 
 READLINE_INCLUDE_PATH=/usr/include/readline
+
+HIREDIS_INCLUDE_PATH=$(PROJ_DEP_ROOT)/hiredis/include
+HIREDIS_LIB_PATH=$(PROJ_DEP_ROOT)/hiredis/lib
+
 
 PROTOC=protoc
 PROTOBUF_BIN_PATH=/usr/bin

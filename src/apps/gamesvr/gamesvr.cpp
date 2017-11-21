@@ -25,6 +25,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include "rank/ranker.h"
 
 bool workOn = true;
 u64 idleCnt = 0;      //服务器空转次数,超过一定值会让服务器sleep一会
@@ -60,7 +61,8 @@ int main()
 	pthread_mutex_init(&lockMutex, NULL);
 
 	TcpServer *tcpServer = TcpServer::GetInstance();
-	ret = tcpServer->Init("10.154.142.48", 6789, &lockMutex);
+	//ret = tcpServer->Init("10.154.142.48", 6789, &lockMutex);
+	ret = tcpServer->Init("127.0.0.1", 6789, &lockMutex);
 	massert_retval(ret == 0, ret);
 	printf("tcp server init success\n");
 
@@ -98,6 +100,10 @@ int main()
 	//DB初始化
 	UniverseDbUtil *db_util = UniverseDbUtil::GetInstance();
 	massert_retval(db_util->Init() == 0, ERR_UNKNOWN);
+
+	//ranker初始化
+	RANKER *ranker = RANKER::get_instance();
+	massert_retval(ranker != NULL, ERR_UNKNOWN);
 
 	if(false)
 	{

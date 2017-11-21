@@ -1,9 +1,14 @@
 #pragma once
 
+#include "../../../common/base_type.h"
+#include "universe_rank.pb.h"
+#include <hiredis.h>
+
 //WCCTODO:抽象一个INTERFACE,这样将来换实现方式时就不需要改动调用代码
 class RANKER
 {
 public:
+	static RANKER* get_instance();
 	int update_rank(const RankRecord &record);
 	int delete_rank(int rank_type, u64 key);
 	int get_rank(int rank_type, u64 key);
@@ -19,7 +24,4 @@ private:
 	unsigned int j;
 	redisContext *c;
 	redisReply *reply;
-
-
-
 };
